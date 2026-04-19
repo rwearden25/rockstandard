@@ -5,71 +5,92 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>RockStandard — small, sturdy software for the field</title>
 <meta name="description" content="RockStandard ships three small, opinionated tools for field-service operators: pzip.ai dispatch, psupp.ai diagnostics, pquote.ai quoting." />
-<meta name="theme-color" content="#0f1115" />
+<meta name="theme-color" content="#ece7da" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
 <style>
   :root {
-    --ink:        #0f1115;
-    --ink-2:      #1a1d24;
-    --rule:       #2a2e38;
-    --paper:      #f3efe7;
-    --paper-2:    #e8e2d3;
-    --bone:       #c9c2b1;
-    --rust:       #c2410c;
-    --rust-2:     #ea580c;
-    --kiln:       #7c2d12;
-    --moss:       #4d5a3a;
-    --mute:       #8b8678;
-    --display:    "Fraunces", ui-serif, Georgia, serif;
-    --mono:       "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    --ink:        #16181c;
+    --ink-soft:   #2a2c33;
+    --ink-faint:  #4d4f57;
+    --paper:      #ece7da;
+    --paper-2:    #e1dccb;
+    --paper-3:    #d6cfba;
+    --bone:       #c8c0aa;
+    --rule:       rgba(22, 24, 28, 0.18);
+    --rule-soft:  rgba(22, 24, 28, 0.08);
+    --moss:       #3d5a3a;
+    --moss-2:     #5a7a52;
+    --moss-3:     #7d9a72;
+    --brass:      #8a6b30;
+    --mute:       #6b6857;
+
+    --display:    "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    --mono:       "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
 
   body {
-    background: var(--ink);
-    color: var(--paper);
-    font-family: var(--mono);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--display);
     font-weight: 400;
-    font-size: 15px;
-    line-height: 1.55;
+    font-size: 16px;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
   }
 
-  /* paper grain — subtle SVG noise overlay */
+  /* Paper grain — kept very low, warm */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 100;
-    opacity: .06;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: .045;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
 
   a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--moss); color: var(--paper); }
 
-  ::selection { background: var(--rust); color: var(--paper); }
-
-  /* ──────────────────────────────────────────
-     SHELL
-  ────────────────────────────────────────── */
   .shell {
-    max-width: 1320px;
+    max-width: 1340px;
     margin: 0 auto;
     padding: 0 clamp(20px, 4vw, 56px);
   }
 
   /* ──────────────────────────────────────────
-     TOP BAR
+     CORNER TICKS — technical-drawing decoration
+  ────────────────────────────────────────── */
+  .ticked { position: relative; }
+  .ticked::before, .ticked::after,
+  .ticked > .tl, .ticked > .tr, .ticked > .bl, .ticked > .br { display: none; }
+  .ticked .corner {
+    position: absolute;
+    width: 14px; height: 14px;
+    pointer-events: none;
+    color: var(--ink);
+  }
+  .ticked .corner.tl { top: -1px; left: -1px;
+    border-top: 1.5px solid; border-left: 1.5px solid; }
+  .ticked .corner.tr { top: -1px; right: -1px;
+    border-top: 1.5px solid; border-right: 1.5px solid; }
+  .ticked .corner.bl { bottom: -1px; left: -1px;
+    border-bottom: 1.5px solid; border-left: 1.5px solid; }
+  .ticked .corner.br { bottom: -1px; right: -1px;
+    border-bottom: 1.5px solid; border-right: 1.5px solid; }
+
+  /* ──────────────────────────────────────────
+     TOP / NAV
   ────────────────────────────────────────── */
   .top {
     display: grid;
@@ -79,479 +100,502 @@
     padding: 22px 0;
     border-bottom: 1px solid var(--rule);
     font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: .08em;
+    font-size: 11px;
+    letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--bone);
+    color: var(--ink-faint);
   }
   .top .mark {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    color: var(--paper);
+    gap: 12px;
+    color: var(--ink);
     font-weight: 500;
+    font-family: var(--display);
+    text-transform: none;
+    letter-spacing: -.005em;
+    font-size: 16px;
   }
   .top .mark .glyph {
-    width: 22px; height: 22px;
+    width: 26px; height: 26px;
     display: inline-block;
   }
-  .top .meta {
-    text-align: center;
-    color: var(--mute);
-  }
-  .top .meta b { color: var(--paper); font-weight: 500; }
+  .top .meta { text-align: center; }
+  .top .meta b { color: var(--ink); font-weight: 600; }
   .top .nav {
     display: inline-flex;
     gap: 22px;
     justify-self: end;
   }
-  .top .nav a { position: relative; }
-  .top .nav a::after {
-    content: "";
-    position: absolute; left: 0; right: 0; bottom: -6px;
-    height: 1px; background: var(--rust);
-    transform: scaleX(0); transform-origin: left;
-    transition: transform .35s cubic-bezier(.2,.8,.2,1);
+  .top .nav a {
+    position: relative;
+    padding-bottom: 4px;
+    border-bottom: 1px solid transparent;
+    transition: border-color .25s, color .25s;
   }
-  .top .nav a:hover::after { transform: scaleX(1); }
+  .top .nav a:hover {
+    color: var(--moss);
+    border-bottom-color: var(--moss);
+  }
 
   /* ──────────────────────────────────────────
-     HERO
+     HERO — specimen page
   ────────────────────────────────────────── */
   .hero {
     position: relative;
-    padding: clamp(60px, 10vw, 140px) 0 clamp(60px, 9vw, 120px);
+    padding: clamp(48px, 8vw, 110px) 0 clamp(60px, 8vw, 110px);
     border-bottom: 1px solid var(--rule);
-    overflow: hidden;
-  }
-  .hero .stamp {
-    position: absolute;
-    top: 36px; right: clamp(20px, 4vw, 56px);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: .14em;
-    color: var(--mute);
-    text-transform: uppercase;
-    text-align: right;
-    line-height: 1.7;
-  }
-  .hero .stamp .dot {
-    display: inline-block;
-    width: 7px; height: 7px;
-    border-radius: 999px;
-    background: var(--rust);
-    margin-right: 8px;
-    box-shadow: 0 0 0 4px rgba(194,65,12,.18);
-    animation: pulse 2.4s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 4px rgba(194,65,12,.18); }
-    50%      { box-shadow: 0 0 0 9px rgba(194,65,12,0);   }
   }
 
-  .hero h1 {
-    font-family: var(--display);
-    font-weight: 350;
-    font-style: normal;
-    font-variation-settings: "opsz" 144, "SOFT" 25;
-    font-size: clamp(58px, 13.2vw, 220px);
-    line-height: .88;
-    letter-spacing: -.04em;
-    margin: 0;
-    color: var(--paper);
-  }
-  .hero h1 .ital {
-    font-style: italic;
-    font-variation-settings: "opsz" 144, "SOFT" 50;
-    color: var(--rust-2);
-  }
-  .hero h1 .amp {
-    font-style: italic;
-    color: var(--bone);
-    font-variation-settings: "opsz" 144, "SOFT" 100;
-    margin: 0 .04em;
+  .hero-frame {
+    position: relative;
+    padding: clamp(28px, 4vw, 56px) clamp(24px, 4vw, 48px);
+    border: 1px solid var(--rule);
+    background:
+      repeating-linear-gradient(
+        45deg,
+        transparent 0 14px,
+        rgba(22,24,28,0.018) 14px 15px
+      );
   }
 
-  .hero .lede {
-    margin-top: clamp(28px, 4vw, 56px);
-    display: grid;
-    grid-template-columns: 1fr 1.4fr;
-    gap: clamp(24px, 6vw, 90px);
-    align-items: end;
-  }
-  .hero .lede .label {
+  .hero-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: .18em;
     text-transform: uppercase;
-    color: var(--mute);
-    border-top: 1px solid var(--rule);
-    padding-top: 12px;
+    color: var(--ink-faint);
+    border-bottom: 1px dashed var(--rule);
+    padding-bottom: 14px;
+    margin-bottom: clamp(28px, 5vw, 60px);
   }
-  .hero .lede p {
-    font-family: var(--display);
-    font-weight: 360;
-    font-size: clamp(20px, 2.4vw, 30px);
-    line-height: 1.35;
-    letter-spacing: -.01em;
-    margin: 0;
-    color: var(--paper);
-    max-width: 30ch;
+  .hero-meta .lt { display: inline-flex; align-items: center; gap: 10px; }
+  .hero-meta .dot {
+    width: 7px; height: 7px;
+    border-radius: 999px;
+    background: var(--moss);
+    box-shadow: 0 0 0 4px rgba(61, 90, 58, .18);
+    animation: pulse 2.6s ease-in-out infinite;
   }
-  .hero .lede p em {
-    font-style: italic;
-    color: var(--rust-2);
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(61, 90, 58, .18); }
+    50%      { box-shadow: 0 0 0 9px rgba(61, 90, 58, 0);   }
   }
 
-  /* CTA row */
+  .wordmark {
+    font-family: var(--display);
+    font-weight: 500;
+    font-variation-settings: "wdth" 88, "opsz" 96;
+    font-size: clamp(60px, 13.5vw, 220px);
+    line-height: .86;
+    letter-spacing: -.045em;
+    color: var(--ink);
+    margin: 0;
+  }
+  .wordmark .b { color: var(--ink); }
+  .wordmark .super {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: .12em;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--moss);
+    vertical-align: super;
+    margin-left: .15em;
+    line-height: 1;
+  }
+
+  .hero-lede {
+    margin-top: clamp(34px, 5vw, 64px);
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: clamp(20px, 4vw, 60px);
+    align-items: start;
+  }
+  .hero-lede .gloss {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    line-height: 1.7;
+    border-top: 1.5px solid var(--ink);
+    padding-top: 12px;
+  }
+  .hero-lede .gloss .key { color: var(--ink); display: block; margin-top: 4px; }
+  .hero-lede p {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 380;
+    font-variation-settings: "wdth" 96;
+    font-size: clamp(22px, 2.6vw, 34px);
+    line-height: 1.28;
+    letter-spacing: -.012em;
+    color: var(--ink);
+    max-width: 32ch;
+  }
+  .hero-lede p span.acc {
+    color: var(--moss);
+    font-style: italic;
+  }
+
   .cta-row {
-    margin-top: clamp(40px, 6vw, 72px);
+    margin-top: clamp(36px, 5vw, 56px);
     display: flex;
     flex-wrap: wrap;
-    gap: 14px 18px;
+    gap: 12px;
     align-items: center;
   }
   .btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 22px;
+    padding: 13px 20px 13px 22px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 11.5px;
     letter-spacing: .14em;
     text-transform: uppercase;
-    border: 1px solid var(--paper);
-    color: var(--paper);
+    border: 1.5px solid var(--ink);
+    color: var(--ink);
     background: transparent;
     border-radius: 0;
-    transition: background .25s, color .25s, transform .25s;
+    transition: background .2s, color .2s, transform .25s, border-color .2s;
   }
-  .btn:hover { background: var(--paper); color: var(--ink); transform: translateY(-2px); }
-  .btn.solid { background: var(--rust); border-color: var(--rust); }
-  .btn.solid:hover { background: var(--rust-2); border-color: var(--rust-2); color: var(--paper); }
-  .btn .arrow {
-    display: inline-block;
-    transition: transform .25s;
-  }
+  .btn:hover { background: var(--ink); color: var(--paper); transform: translateY(-2px); }
+  .btn.solid { background: var(--moss); border-color: var(--moss); color: var(--paper); }
+  .btn.solid:hover { background: var(--ink); border-color: var(--ink); }
+  .btn .arrow { transition: transform .25s; display: inline-block; }
   .btn:hover .arrow { transform: translateX(4px); }
 
   /* ──────────────────────────────────────────
-     MARQUEE / RULES
+     INDEX BAR
   ────────────────────────────────────────── */
-  .rule-line {
+  .index-bar {
     display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 18px;
-    align-items: center;
-    padding: 14px 0;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid var(--rule);
+    border-top: 1px solid var(--rule);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: .16em;
     text-transform: uppercase;
-    color: var(--bone);
-    border-bottom: 1px solid var(--rule);
+    color: var(--ink-faint);
   }
-  .rule-line .dash {
-    height: 1px;
-    background: linear-gradient(to right, var(--rule), transparent);
+  .index-bar div {
+    padding: 16px 0;
+    border-right: 1px solid var(--rule);
   }
+  .index-bar div:last-child { border-right: 0; }
+  .index-bar div span { color: var(--ink); }
 
   /* ──────────────────────────────────────────
-     PRODUCTS — the ledger
+     SUITE — specimen cards
   ────────────────────────────────────────── */
-  section.ledger {
+  section.suite {
     padding: clamp(80px, 10vw, 140px) 0;
-    background: var(--paper);
-    color: var(--ink);
-    position: relative;
   }
-  section.ledger::before {
-    content: "";
-    position: absolute; inset: 0;
-    background:
-      repeating-linear-gradient(to bottom, transparent 0 31px, rgba(15,17,21,.04) 31px 32px);
-    pointer-events: none;
-  }
-
-  .ledger-head {
+  .suite-head {
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: end;
     gap: 40px;
     margin-bottom: clamp(50px, 7vw, 90px);
   }
-  .ledger-head .eyebrow {
+  .suite-head .eyebrow {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: .2em;
     text-transform: uppercase;
-    color: var(--kiln);
+    color: var(--moss);
   }
-  .ledger-head h2 {
+  .suite-head h2 {
     font-family: var(--display);
-    font-weight: 350;
-    font-variation-settings: "opsz" 144, "SOFT" 25;
-    font-size: clamp(38px, 5.4vw, 78px);
-    line-height: .98;
-    letter-spacing: -.025em;
+    font-weight: 480;
+    font-variation-settings: "wdth" 80, "opsz" 96;
+    font-size: clamp(36px, 5.4vw, 76px);
+    line-height: .96;
+    letter-spacing: -.035em;
     margin: 14px 0 0;
     color: var(--ink);
   }
-  .ledger-head h2 em {
+  .suite-head h2 .it {
     font-style: italic;
-    color: var(--rust);
+    font-variation-settings: "wdth" 92;
+    color: var(--moss);
   }
-  .ledger-head .blurb {
+  .suite-head .blurb {
     font-family: var(--display);
-    font-weight: 360;
-    font-size: clamp(17px, 1.6vw, 21px);
-    line-height: 1.45;
-    color: var(--ink-2);
+    font-weight: 380;
+    font-size: clamp(16px, 1.4vw, 19px);
+    line-height: 1.5;
+    color: var(--ink-soft);
     max-width: 42ch;
     justify-self: end;
   }
 
-  .products {
+  .grid-3 {
     display: grid;
-    gap: 0;
-    border-top: 1px solid var(--ink);
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(20px, 2.4vw, 32px);
   }
 
-  .product {
-    display: grid;
-    grid-template-columns: 90px 1fr 1.6fr auto;
-    gap: clamp(20px, 3vw, 48px);
-    align-items: stretch;
-    padding: clamp(28px, 4vw, 42px) 0;
-    border-bottom: 1px solid var(--ink);
+  .specimen {
     position: relative;
-    transition: background .35s;
-  }
-  .product:hover { background: var(--paper-2); }
-  .product:hover .product-name { transform: translateX(6px); }
-  .product:hover .arrow-btn { background: var(--ink); color: var(--paper); }
-
-  .product .index {
-    font-family: var(--display);
-    font-style: italic;
-    font-weight: 350;
-    font-variation-settings: "opsz" 144, "SOFT" 100;
-    font-size: clamp(50px, 6vw, 88px);
-    line-height: 1;
-    color: var(--rust);
-  }
-
-  .product .meta-col {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    padding: clamp(22px, 2.4vw, 32px);
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+    transition: transform .35s cubic-bezier(.2,.8,.2,1), background .35s;
+    min-height: 380px;
   }
-  .product .badge {
-    align-self: start;
+  .specimen:hover { transform: translateY(-4px); background: var(--paper-2); }
+  .specimen:hover .name { color: var(--moss); }
+  .specimen:hover .open svg { transform: translate(4px, -4px); }
+
+  .specimen .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: clamp(28px, 4vw, 40px);
+  }
+  .specimen .badge {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 5px 11px;
-    border: 1px solid var(--ink);
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-  }
-  .product .badge.live {
+    gap: 7px;
+    padding: 4px 10px;
     background: var(--ink);
     color: var(--paper);
   }
-  .product .badge.live::before {
+  .specimen .badge::before {
     content: "";
-    width: 6px; height: 6px; border-radius: 999px;
-    background: #6ee7b7;
-    box-shadow: 0 0 0 3px rgba(110,231,183,.25);
-  }
-  .product .badge.soon {
-    color: var(--kiln);
-    border-color: var(--kiln);
-  }
-  .product .domain {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: .04em;
-    color: var(--mute);
-  }
-  .product .product-name {
-    font-family: var(--display);
-    font-weight: 380;
-    font-variation-settings: "opsz" 144, "SOFT" 25;
-    font-size: clamp(36px, 4.4vw, 62px);
-    line-height: 1;
-    letter-spacing: -.02em;
-    color: var(--ink);
-    transition: transform .35s cubic-bezier(.2,.8,.2,1);
-  }
-  .product .product-name em {
-    font-style: italic;
-    color: var(--rust);
+    width: 5px; height: 5px;
+    border-radius: 999px;
+    background: var(--moss-3);
+    box-shadow: 0 0 0 2.5px rgba(125, 154, 114, .3);
   }
 
-  .product .desc {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 14px;
+  .specimen .index {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .18em;
+    color: var(--moss);
   }
-  .product .desc p {
-    margin: 0;
+
+  .specimen .name {
     font-family: var(--display);
-    font-size: clamp(16px, 1.4vw, 19px);
-    line-height: 1.45;
-    color: var(--ink-2);
+    font-weight: 500;
+    font-variation-settings: "wdth" 84, "opsz" 96;
+    font-size: clamp(46px, 5vw, 72px);
+    line-height: .9;
+    letter-spacing: -.04em;
+    color: var(--ink);
+    margin: 0 0 6px;
+    transition: color .25s;
   }
-  .product .specs {
+  .specimen .role {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: clamp(20px, 2.5vw, 28px);
+  }
+
+  .specimen .desc {
+    font-family: var(--display);
+    font-weight: 380;
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0 0 auto;
+  }
+
+  .specimen .specs {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 8px;
+    gap: 5px;
+    margin-top: 20px;
+  }
+  .specimen .specs span {
     font-family: var(--mono);
     font-size: 10px;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--mute);
-  }
-  .product .specs span {
-    border: 1px solid var(--bone);
+    color: var(--ink-soft);
+    border: 1px solid var(--rule);
     padding: 3px 8px;
   }
 
-  .product .arrow-col {
+  .specimen .footer-row {
     display: flex;
-    align-items: center;
+    justify-content: space-between;
+    align-items: end;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--rule);
   }
-  .arrow-btn {
-    width: 64px; height: 64px;
+  .specimen .domain {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .specimen .open {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    border: 1px solid var(--ink);
-    color: var(--ink);
-    background: transparent;
-    transition: background .25s, color .25s;
+    gap: 8px;
+    color: var(--moss);
   }
-  .arrow-btn svg { width: 22px; height: 22px; }
+  .specimen .open svg { width: 14px; height: 14px; transition: transform .25s; }
 
   /* ──────────────────────────────────────────
-     MANIFESTO
+     MANIFESTO (inverted block)
   ────────────────────────────────────────── */
   section.manifesto {
-    padding: clamp(90px, 12vw, 160px) 0;
     background: var(--ink);
     color: var(--paper);
-    border-bottom: 1px solid var(--rule);
+    padding: clamp(90px, 12vw, 160px) 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    position: relative;
+    overflow: hidden;
   }
-  .manifesto-grid {
+  section.manifesto::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(to right, transparent 0 80px, rgba(236, 231, 218, .03) 80px 81px),
+      repeating-linear-gradient(to bottom, transparent 0 80px, rgba(236, 231, 218, .03) 80px 81px);
+    pointer-events: none;
+  }
+  .manifesto-inner {
+    position: relative;
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: clamp(30px, 6vw, 90px);
+    grid-template-columns: 200px 1fr;
+    gap: clamp(20px, 4vw, 60px);
   }
-  .manifesto-grid .label {
+  .manifesto-inner .label {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: .2em;
     text-transform: uppercase;
-    color: var(--rust-2);
-    border-top: 1px solid var(--rust);
+    color: var(--moss-3);
+    border-top: 1.5px solid var(--moss-3);
     padding-top: 12px;
   }
-  .manifesto-grid blockquote {
+  .manifesto-inner blockquote {
     margin: 0;
     font-family: var(--display);
-    font-weight: 350;
-    font-variation-settings: "opsz" 144, "SOFT" 50;
-    font-size: clamp(26px, 3.8vw, 56px);
-    line-height: 1.12;
-    letter-spacing: -.02em;
+    font-weight: 420;
+    font-variation-settings: "wdth" 92, "opsz" 96;
+    font-size: clamp(28px, 4.2vw, 60px);
+    line-height: 1.08;
+    letter-spacing: -.025em;
     color: var(--paper);
   }
-  .manifesto-grid blockquote em {
+  .manifesto-inner blockquote .acc {
+    color: var(--moss-3);
     font-style: italic;
-    color: var(--rust-2);
   }
-  .manifesto-grid blockquote .strike {
-    color: var(--mute);
+  .manifesto-inner blockquote .strike {
+    color: var(--ink-faint);
     text-decoration: line-through;
     text-decoration-thickness: 2px;
   }
-  .signoff {
-    margin-top: clamp(40px, 5vw, 72px);
-    grid-column: 2;
+  .manifesto-inner .signoff {
+    margin-top: clamp(40px, 5vw, 64px);
     display: flex;
     align-items: center;
     gap: 18px;
     font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: .12em;
+    font-size: 11px;
+    letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--bone);
+    color: #b6b09a;
   }
-  .signoff .line { flex: 1; height: 1px; background: var(--rule); }
+  .manifesto-inner .signoff .line { flex: 1; height: 1px; background: rgba(236,231,218,.15); }
 
   /* ──────────────────────────────────────────
-     PRINCIPLES (three columns)
+     PRINCIPLES
   ────────────────────────────────────────── */
   section.principles {
-    padding: clamp(70px, 9vw, 130px) 0;
-    background: var(--paper);
-    color: var(--ink);
+    padding: clamp(80px, 10vw, 130px) 0;
+    background: var(--paper-2);
   }
   .principles-head {
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 28px;
-    align-items: baseline;
+    grid-template-columns: 200px 1fr;
+    gap: clamp(20px, 4vw, 60px);
+    align-items: start;
     margin-bottom: clamp(40px, 5vw, 60px);
   }
   .principles-head .marker {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: .2em;
-    color: var(--rust);
+    color: var(--moss);
     text-transform: uppercase;
+    border-top: 1.5px solid var(--ink);
+    padding-top: 12px;
   }
   .principles-head h3 {
     font-family: var(--display);
-    font-weight: 350;
-    font-style: italic;
-    font-variation-settings: "opsz" 144, "SOFT" 80;
-    font-size: clamp(28px, 3.4vw, 44px);
+    font-weight: 460;
+    font-variation-settings: "wdth" 84, "opsz" 96;
+    font-size: clamp(30px, 3.8vw, 50px);
     margin: 0;
     line-height: 1.05;
-    letter-spacing: -.015em;
+    letter-spacing: -.025em;
   }
+  .principles-head h3 .it { font-style: italic; color: var(--moss); }
+
   .principles-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: clamp(24px, 3vw, 50px);
-    border-top: 1px solid var(--ink);
-    padding-top: clamp(28px, 4vw, 44px);
+    gap: clamp(20px, 2.4vw, 32px);
+  }
+  .principle {
+    position: relative;
+    padding: clamp(22px, 2.4vw, 30px);
+    background: var(--paper);
+    border: 1px solid var(--rule);
   }
   .principle .num {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: .18em;
-    color: var(--rust);
+    color: var(--moss);
   }
   .principle h4 {
     margin: 14px 0 12px;
     font-family: var(--display);
-    font-weight: 400;
+    font-weight: 500;
+    font-variation-settings: "wdth" 88;
     font-size: clamp(22px, 2vw, 28px);
     line-height: 1.1;
-    letter-spacing: -.01em;
+    letter-spacing: -.015em;
   }
   .principle p {
     margin: 0;
-    font-family: var(--mono);
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--ink-2);
+    font-family: var(--display);
+    font-weight: 380;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
   }
 
   /* ──────────────────────────────────────────
@@ -559,58 +603,64 @@
   ────────────────────────────────────────── */
   section.contact {
     padding: clamp(80px, 10vw, 140px) 0;
-    background: var(--ink);
-    color: var(--paper);
+    background: var(--paper);
+    border-top: 1px solid var(--rule);
     border-bottom: 1px solid var(--rule);
   }
   .contact-grid {
     display: grid;
     grid-template-columns: 1.4fr 1fr;
-    gap: clamp(30px, 6vw, 90px);
+    gap: clamp(30px, 5vw, 80px);
     align-items: end;
   }
   .contact-grid h3 {
     font-family: var(--display);
-    font-weight: 360;
-    font-variation-settings: "opsz" 144, "SOFT" 30;
-    font-size: clamp(40px, 6vw, 84px);
-    line-height: .95;
-    letter-spacing: -.025em;
+    font-weight: 480;
+    font-variation-settings: "wdth" 82, "opsz" 96;
+    font-size: clamp(40px, 6vw, 86px);
+    line-height: .96;
+    letter-spacing: -.03em;
     margin: 0;
+    color: var(--ink);
   }
-  .contact-grid h3 em { font-style: italic; color: var(--rust-2); }
-  .contact-grid .right { font-size: 13px; color: var(--bone); }
-  .contact-grid .right ul {
-    list-style: none;
-    margin: 0; padding: 0;
-    display: flex; flex-direction: column; gap: 10px;
+  .contact-grid h3 .it { font-style: italic; color: var(--moss); }
+
+  .contact-table {
+    border-top: 1.5px solid var(--ink);
   }
-  .contact-grid .right li {
+  .contact-table .row {
     display: grid;
-    grid-template-columns: 90px 1fr;
-    gap: 12px;
-    border-top: 1px solid var(--rule);
-    padding-top: 10px;
+    grid-template-columns: 110px 1fr;
+    gap: 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
   }
-  .contact-grid .right li span:first-child {
-    color: var(--mute);
-    font-size: 11px;
-    letter-spacing: .14em;
+  .contact-table .row .k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .18em;
     text-transform: uppercase;
+    color: var(--ink-faint);
   }
-  .contact-grid .right a:hover { color: var(--rust-2); }
+  .contact-table .row .v {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .contact-table a:hover { color: var(--moss); border-bottom: 1px solid var(--moss); }
 
   /* ──────────────────────────────────────────
      FOOTER
   ────────────────────────────────────────── */
   footer {
-    padding: 30px 0 36px;
+    padding: 28px 0 36px;
+    background: var(--paper);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--mute);
-    background: var(--ink);
+    color: var(--ink-faint);
   }
   footer .row {
     display: grid;
@@ -618,49 +668,45 @@
     align-items: center;
     gap: 20px;
   }
-  footer .center { text-align: center; color: var(--bone); }
+  footer .center { text-align: center; color: var(--ink); }
   footer .right  { text-align: right; }
+  footer a:hover { color: var(--moss); }
 
   /* ──────────────────────────────────────────
-     ENTRANCE ANIMATION
+     ENTRANCE
   ────────────────────────────────────────── */
   @media (prefers-reduced-motion: no-preference) {
     .reveal {
       opacity: 0;
-      transform: translateY(18px);
+      transform: translateY(16px);
       animation: reveal 1s cubic-bezier(.2,.8,.2,1) forwards;
     }
     .reveal.d1 { animation-delay: .05s; }
-    .reveal.d2 { animation-delay: .20s; }
-    .reveal.d3 { animation-delay: .35s; }
-    .reveal.d4 { animation-delay: .50s; }
-    .reveal.d5 { animation-delay: .65s; }
+    .reveal.d2 { animation-delay: .18s; }
+    .reveal.d3 { animation-delay: .31s; }
+    .reveal.d4 { animation-delay: .44s; }
+    .reveal.d5 { animation-delay: .57s; }
   }
-  @keyframes reveal {
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
 
   /* ──────────────────────────────────────────
      RESPONSIVE
   ────────────────────────────────────────── */
-  @media (max-width: 880px) {
+  @media (max-width: 980px) {
+    .grid-3, .principles-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 720px) {
     .top { grid-template-columns: 1fr auto; }
     .top .meta { display: none; }
-    .hero .lede { grid-template-columns: 1fr; gap: 18px; }
-    .ledger-head { grid-template-columns: 1fr; gap: 18px; }
-    .ledger-head .blurb { justify-self: start; }
-    .product {
-      grid-template-columns: 60px 1fr;
-      gap: 16px 20px;
-    }
-    .product .index { font-size: 48px; }
-    .product .meta-col { grid-column: 2; }
-    .product .desc { grid-column: 1 / -1; }
-    .product .arrow-col { grid-column: 1 / -1; justify-content: flex-end; }
-    .principles-head { grid-template-columns: 1fr; gap: 10px; }
-    .principles-grid { grid-template-columns: 1fr; gap: 32px; }
-    .manifesto-grid { grid-template-columns: 1fr; }
-    .signoff { grid-column: 1; }
+    .hero-lede { grid-template-columns: 1fr; gap: 16px; }
+    .suite-head { grid-template-columns: 1fr; gap: 16px; }
+    .suite-head .blurb { justify-self: start; }
+    .grid-3, .principles-grid { grid-template-columns: 1fr; }
+    .index-bar { grid-template-columns: 1fr 1fr; }
+    .index-bar div:nth-child(2) { border-right: 0; }
+    .index-bar div:nth-child(1), .index-bar div:nth-child(2) { border-bottom: 1px solid var(--rule); }
+    .manifesto-inner { grid-template-columns: 1fr; }
+    .principles-head { grid-template-columns: 1fr; gap: 8px; }
     .contact-grid { grid-template-columns: 1fr; gap: 30px; }
     footer .row { grid-template-columns: 1fr; text-align: left; gap: 8px; }
     footer .center, footer .right { text-align: left; }
@@ -673,14 +719,15 @@
   <!-- TOP BAR -->
   <header class="top">
     <a class="mark" href="/">
-      <svg class="glyph" viewBox="0 0 22 22" aria-hidden="true">
-        <rect x="1" y="1" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M5 16 L11 5 L17 16 Z" fill="currentColor" />
+      <svg class="glyph" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1" y="1" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M6 19 L13 6 L20 19 Z" fill="currentColor" />
+        <line x1="6" y1="19" x2="20" y2="19" stroke="#ece7da" stroke-width="1.5" />
       </svg>
       <span>RockStandard</span>
     </a>
     <div class="meta">
-      Established <b>2026</b> · Three tools, shipped from the field
+      EST. <b>2026</b> &nbsp;·&nbsp; Three tools, shipped from the field
     </div>
     <nav class="nav">
       <a href="#suite">Suite</a>
@@ -691,123 +738,140 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="stamp reveal d1">
-      <span class="dot"></span>NEW · LAUNCHING 2026<br/>
-      Vol. 01 · Issue 01
-    </div>
+    <div class="hero-frame ticked reveal d1">
+      <span class="corner tl"></span>
+      <span class="corner tr"></span>
+      <span class="corner bl"></span>
+      <span class="corner br"></span>
 
-    <h1 class="reveal d2">
-      Rock<span class="amp">·</span><span class="ital">Standard</span>
-    </h1>
+      <div class="hero-meta">
+        <span class="lt"><span class="dot"></span>VOL. 01 — ISSUE 01 / SPECIMEN PAGE</span>
+        <span>FIG. 00 · BRAND MARK · WIDTH 100%</span>
+      </div>
 
-    <div class="lede">
-      <div class="label reveal d3">§ Field-tested software,<br/>built one tool at a time.</div>
-      <p class="reveal d4">
-        Three small, opinionated apps for crews who&nbsp;<em>do the work</em> —
-        dispatch, diagnose, quote — sharing one login and a single bill.
-      </p>
-    </div>
+      <h1 class="wordmark">RockStandard<sup class="super">™</sup></h1>
 
-    <div class="cta-row reveal d5">
-      <a class="btn solid" href="#suite">
-        See the suite <span class="arrow">→</span>
-      </a>
-      <a class="btn" href="https://pzip.ai" target="_blank" rel="noopener">
-        Open pzip.ai <span class="arrow">↗</span>
-      </a>
+      <div class="hero-lede">
+        <div class="gloss">
+          GLOSS / 01
+          <span class="key">Field-tested software,</span>
+          <span class="key">built one tool at a time.</span>
+        </div>
+        <p>
+          Three small, opinionated apps for crews who <span class="acc">do the work</span> —
+          dispatch, diagnose, quote — sharing one login and a single bill.
+        </p>
+      </div>
+
+      <div class="cta-row reveal d3">
+        <a class="btn solid" href="#suite">Open the suite <span class="arrow">→</span></a>
+        <a class="btn" href="https://pzip.ai" target="_blank" rel="noopener">Visit pzip.ai <span class="arrow">↗</span></a>
+      </div>
     </div>
   </section>
 
-  <!-- RULE -->
-  <div class="rule-line">
-    <span>// Index</span>
-    <span class="dash"></span>
-    <span>03 tools · 01 login · 01 invoice</span>
+  <!-- INDEX BAR -->
+  <div class="index-bar">
+    <div>03 <span>tools</span></div>
+    <div>01 <span>login</span></div>
+    <div>01 <span>invoice</span></div>
+    <div>00 <span>onboarding calls</span></div>
   </div>
 </div>
 
-<!-- LEDGER / PRODUCTS -->
-<section class="ledger" id="suite">
+<!-- SUITE -->
+<section class="suite" id="suite">
   <div class="shell">
-    <div class="ledger-head">
+    <div class="suite-head">
       <div>
-        <div class="eyebrow">§ 02 — The Suite</div>
-        <h2>Small tools that <em>earn their keep</em>.</h2>
+        <div class="eyebrow">FIG. 01 / THE SUITE</div>
+        <h2>Small tools that <span class="it">earn their keep</span>.</h2>
       </div>
       <p class="blurb">
-        Each app does one job for one kind of operator. Use one, use all three —
-        the ledger keeps itself.
+        Each app does one job for one kind of operator. Use one,
+        use all three — the ledger keeps itself.
       </p>
     </div>
 
-    <div class="products">
+    <div class="grid-3">
 
-      <a class="product" href="https://pzip.ai" target="_blank" rel="noopener">
-        <div class="index">01</div>
-        <div class="meta-col">
-          <span class="badge live">LIVE</span>
+      <!-- pzip -->
+      <a class="specimen ticked" href="https://pzip.ai" target="_blank" rel="noopener">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+
+        <div class="top-row">
+          <span class="index">SPEC. 01</span>
+          <span class="badge">LIVE</span>
+        </div>
+
+        <h3 class="name">pzip</h3>
+        <div class="role">Dispatch &amp; CRM</div>
+        <p class="desc">Schedule jobs, track customers, close the day. Single-tenant, multi-user, paid by the seat.</p>
+        <div class="specs">
+          <span>Field service</span><span>Postgres</span><span>$5.99 / mo</span><span>7-day trial</span>
+        </div>
+        <div class="footer-row">
           <span class="domain">pzip.ai</span>
-        </div>
-        <div class="desc">
-          <div class="product-name">pzip <em>—</em> dispatch &amp; CRM</div>
-          <p>Schedule jobs, track customers, close the day. Single-tenant, multi-user, paid by the seat.</p>
-          <div class="specs">
-            <span>Field service</span><span>Postgres</span><span>$5.99 / mo</span><span>7-day trial</span>
-          </div>
-        </div>
-        <div class="arrow-col">
-          <span class="arrow-btn" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-              <path d="M5 12h14M13 5l7 7-7 7"/>
+          <span class="open">OPEN
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17 L17 7 M9 7 H17 V15"/>
             </svg>
           </span>
         </div>
       </a>
 
-      <a class="product" href="https://psupp.ai" target="_blank" rel="noopener">
-        <div class="index">02</div>
-        <div class="meta-col">
-          <span class="badge live">LIVE</span>
+      <!-- psupp -->
+      <a class="specimen ticked" href="https://psupp.ai" target="_blank" rel="noopener">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+
+        <div class="top-row">
+          <span class="index">SPEC. 02</span>
+          <span class="badge">LIVE</span>
+        </div>
+
+        <h3 class="name">psupp</h3>
+        <div class="role">Diagnostics desk</div>
+        <p class="desc">An agentic support tool that reads 280+ manufacturer manuals and walks techs through repairs in plain English.</p>
+        <div class="specs">
+          <span>Equipment</span><span>282 docs · tsvector</span><span>Agentic search</span>
+        </div>
+        <div class="footer-row">
           <span class="domain">psupp.ai</span>
-        </div>
-        <div class="desc">
-          <div class="product-name">psupp <em>—</em> diagnostics desk</div>
-          <p>An agentic support tool that reads 280+ manufacturer manuals and walks techs through repairs in plain English.</p>
-          <div class="specs">
-            <span>Equipment</span><span>282 docs · tsvector</span><span>Agentic search</span>
-          </div>
-        </div>
-        <div class="arrow-col">
-          <span class="arrow-btn" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-              <path d="M5 12h14M13 5l7 7-7 7"/>
+          <span class="open">OPEN
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17 L17 7 M9 7 H17 V15"/>
             </svg>
           </span>
         </div>
       </a>
 
-      <a class="product" href="https://pquote.ai" target="_blank" rel="noopener">
-        <div class="index">03</div>
-        <div class="meta-col">
-          <span class="badge live">LIVE</span>
+      <!-- pquote -->
+      <a class="specimen ticked" href="https://pquote.ai" target="_blank" rel="noopener">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+
+        <div class="top-row">
+          <span class="index">SPEC. 03</span>
+          <span class="badge">LIVE</span>
+        </div>
+
+        <h3 class="name">pquote</h3>
+        <div class="role">Quoting generator</div>
+        <p class="desc">Turn a site address and a few photos into a numbered, branded estimate — with maps, math, and margin baked in.</p>
+        <div class="specs">
+          <span>Estimating</span><span>Mapbox</span><span>AI-assisted</span>
+        </div>
+        <div class="footer-row">
           <span class="domain">pquote.ai</span>
-        </div>
-        <div class="desc">
-          <div class="product-name">pquote <em>—</em> quoting generator</div>
-          <p>Turn a site address and a few photos into a numbered, branded estimate — with maps, math, and margin baked in.</p>
-          <div class="specs">
-            <span>Estimating</span><span>Mapbox</span><span>AI-assisted</span>
-          </div>
-        </div>
-        <div class="arrow-col">
-          <span class="arrow-btn" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-              <path d="M5 12h14M13 5l7 7-7 7"/>
+          <span class="open">OPEN
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17 L17 7 M9 7 H17 V15"/>
             </svg>
           </span>
         </div>
       </a>
-
     </div>
   </div>
 </section>
@@ -815,18 +879,18 @@
 <!-- MANIFESTO -->
 <section class="manifesto" id="manifesto">
   <div class="shell">
-    <div class="manifesto-grid">
-      <div class="label">§ 03 — Manifesto</div>
+    <div class="manifesto-inner">
+      <div class="label">FIG. 02 / MANIFESTO</div>
       <div>
         <blockquote>
           We build the tools we needed first<span class="strike"> — and couldn't&nbsp;find</span>.<br/>
-          No <em>onboarding calls</em>. No seat counts. No&nbsp;quarterly review.<br/>
-          Just software that <em>shows up Monday</em>.
+          No <span class="acc">onboarding calls</span>. No seat counts. No quarterly review.<br/>
+          Just software that <span class="acc">shows up Monday</span>.
         </blockquote>
         <div class="signoff">
-          <span>— Standard Power Washing &amp; co.</span>
+          <span>— RockStandard &amp; co.</span>
           <span class="line"></span>
-          <span>EST. 2026 · Texas</span>
+          <span>EST. 2026 · TEXAS</span>
         </div>
       </div>
     </div>
@@ -837,21 +901,27 @@
 <section class="principles">
   <div class="shell">
     <div class="principles-head">
-      <div class="marker">§ 04 — How we&nbsp;ship</div>
-      <h3>Three rules. Worth repeating.</h3>
+      <div class="marker">FIG. 03 / HOW WE SHIP</div>
+      <h3>Three rules. <span class="it">Worth repeating.</span></h3>
     </div>
     <div class="principles-grid">
-      <div class="principle">
+      <div class="principle ticked">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
         <div class="num">— 01</div>
         <h4>One tool, one job</h4>
         <p>No suites pretending to be platforms. Each app is small enough that one person can hold the whole thing in their head — including the customer.</p>
       </div>
-      <div class="principle">
+      <div class="principle ticked">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
         <div class="num">— 02</div>
-        <h4>The customer owns their data</h4>
+        <h4>Customer owns the data</h4>
         <p>Plain CSV exports from every screen. No data hostage at end-of-trial. If you leave, you leave with your records.</p>
       </div>
-      <div class="principle">
+      <div class="principle ticked">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
         <div class="num">— 03</div>
         <h4>Priced like tools, not SaaS</h4>
         <p>Flat monthly. Unlimited users. No tiered features held back to push you up the ladder. If we add it, you get&nbsp;it.</p>
@@ -864,14 +934,12 @@
 <section class="contact" id="contact">
   <div class="shell">
     <div class="contact-grid">
-      <h3>Got a job <em>worth&nbsp;doing</em>?<br/>Bring it in.</h3>
-      <div class="right">
-        <ul>
-          <li><span>General</span><span><a href="mailto:hello@rockstandard.ai">hello@rockstandard.ai</a></span></li>
-          <li><span>Press</span><span><a href="mailto:press@rockstandard.ai">press@rockstandard.ai</a></span></li>
-          <li><span>Built by</span><span>Standard Power Washing LLC · Texas</span></li>
-          <li><span>Status</span><span>pzip.ai · psupp.ai · pquote.ai — all live</span></li>
-        </ul>
+      <h3>Got a job <span class="it">worth&nbsp;doing</span>?<br/>Bring it in.</h3>
+      <div class="contact-table">
+        <div class="row"><span class="k">General</span><span class="v"><a href="mailto:hello@rockstandard.ai">hello@rockstandard.ai</a></span></div>
+        <div class="row"><span class="k">Press</span><span class="v"><a href="mailto:press@rockstandard.ai">press@rockstandard.ai</a></span></div>
+        <div class="row"><span class="k">Built by</span><span class="v">RockStandard · Texas</span></div>
+        <div class="row"><span class="k">Status</span><span class="v">pzip.ai · psupp.ai · pquote.ai — all live</span></div>
       </div>
     </div>
   </div>
@@ -882,7 +950,7 @@
   <div class="shell row">
     <div>© 2026 RockStandard</div>
     <div class="center">— Built in Texas · Shipped on&nbsp;Mondays —</div>
-    <div class="right">v0.1 · <a href="/api/health">status</a></div>
+    <div class="right">v0.2 · <a href="/api/health">status</a></div>
   </div>
 </footer>
 

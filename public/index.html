@@ -626,6 +626,314 @@
   .card:hover .visit .arrow { transform: translate(4px, -4px); color: var(--accent); }
 
   /* ──────────────────────────────────────────
+     TOURS — video embed section
+  ────────────────────────────────────────── */
+  section.tours {
+    padding: clamp(80px, 10vw, 130px) 0;
+    background: var(--surface);
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    position: relative;
+    overflow: hidden;
+  }
+  section.tours::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(10, 10, 10, 0.04) 1px, transparent 0);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 80%);
+    pointer-events: none;
+    opacity: .55;
+  }
+  section.tours > .shell { position: relative; z-index: 1; }
+
+  .tours-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(18px, 2vw, 24px);
+  }
+  .tour-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--hairline);
+    border-radius: var(--r);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    color: var(--ink);
+    appearance: none;
+    text-align: left;
+    font-family: var(--font);
+    padding: 0;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 1px 2px rgba(10, 10, 10, 0.025),
+      0 6px 14px -8px rgba(10, 10, 10, 0.06);
+  }
+  .tour-tile:hover {
+    border-color: rgba(10, 10, 10, 0.4);
+    transform: translateY(-4px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 12px 24px -8px rgba(10, 10, 10, 0.10),
+      0 24px 48px -12px rgba(30, 64, 175, 0.16);
+  }
+
+  .poster {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background:
+      radial-gradient(ellipse 70% 60% at 30% 30%, rgba(30, 64, 175, 0.32), transparent 60%),
+      linear-gradient(135deg, #131319 0%, #0a0a0a 100%);
+    color: var(--bg);
+    overflow: hidden;
+  }
+  .poster::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-size: 18px 18px;
+    pointer-events: none;
+  }
+  .poster .mark {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    width: 32px;
+    height: 32px;
+    color: var(--bg);
+    z-index: 2;
+  }
+  .poster .word {
+    position: absolute;
+    bottom: 18px;
+    left: 20px;
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 600;
+    letter-spacing: -.025em;
+    line-height: 1;
+    z-index: 2;
+  }
+  .poster .word .dot { color: #93c5fd; }
+  .poster .duration {
+    position: absolute;
+    top: 20px;
+    right: 18px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(250, 250, 247, 0.12);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .04em;
+    color: var(--bg);
+    z-index: 2;
+  }
+  .poster .play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0)),
+      var(--bg);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 4px 12px rgba(10,10,10,0.20),
+      0 12px 32px -8px rgba(30, 64, 175, 0.40);
+    transition: transform .3s, box-shadow .3s;
+    z-index: 3;
+  }
+  .poster .play svg { width: 22px; height: 22px; margin-left: 3px; }
+  .tour-tile:hover .poster .play {
+    transform: translate(-50%, -50%) scale(1.08);
+    box-shadow:
+      0 6px 16px rgba(10,10,10,0.24),
+      0 16px 40px -8px rgba(30, 64, 175, 0.55);
+  }
+
+  /* "Coming soon" ribbon — shown when data-video is empty */
+  .tour-tile[data-video=""] .poster::before {
+    content: "Tour coming soon";
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: rgba(30, 64, 175, 0.22);
+    border: 1px solid rgba(147, 197, 253, 0.32);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .04em;
+    color: #cfdcfd;
+    z-index: 2;
+  }
+  .tour-tile[data-video=""] .poster .play { background: rgba(255,255,255,0.92); }
+
+  .tour-tile .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-top: 1px solid var(--hairline);
+  }
+  .tour-tile .meta .name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .tour-tile .meta .role {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  /* ──────────────────────────────────────────
+     LIGHTBOX
+  ────────────────────────────────────────── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(20px, 5vw, 60px);
+    background: rgba(8, 8, 12, 0.78);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    opacity: 0;
+    transition: opacity .25s;
+  }
+  .lightbox.open {
+    display: flex;
+    opacity: 1;
+  }
+  .lightbox::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(30, 64, 175, 0.20), transparent 60%);
+    pointer-events: none;
+  }
+  .lightbox .close {
+    position: absolute;
+    top: clamp(14px, 2.4vw, 24px);
+    right: clamp(14px, 2.4vw, 24px);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(250, 250, 247, 0.12);
+    border: 1px solid rgba(250, 250, 247, 0.18);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: background .2s, transform .2s;
+  }
+  .lightbox .close:hover { background: rgba(250, 250, 247, 0.22); transform: scale(1.05); }
+  .lightbox .close svg { width: 20px; height: 20px; }
+
+  .lightbox .frame {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    z-index: 1;
+  }
+  .lightbox .video-wrap {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6);
+  }
+  .lightbox video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+  .lightbox .placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+      radial-gradient(ellipse 60% 60% at 50% 40%, rgba(30, 64, 175, 0.42), transparent 60%),
+      linear-gradient(135deg, #131319 0%, #0a0a0a 100%);
+    color: var(--bg);
+    padding: 40px 28px;
+    gap: 18px;
+  }
+  .lightbox .placeholder h4 {
+    margin: 0;
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 600;
+    letter-spacing: -.025em;
+  }
+  .lightbox .placeholder h4 .dot { color: #93c5fd; }
+  .lightbox .placeholder p {
+    margin: 0;
+    max-width: 48ch;
+    font-size: 16px;
+    color: rgba(250, 250, 247, 0.72);
+    line-height: 1.55;
+  }
+  .lightbox .placeholder .pill-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    padding: 11px 18px;
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    transition: background .2s, color .2s, transform .2s;
+  }
+  .lightbox .placeholder .pill-link:hover {
+    background: var(--accent);
+    color: var(--bg);
+    transform: translateY(-1px);
+  }
+
+  .lightbox .caption {
+    margin-top: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--bg);
+    font-size: 14px;
+  }
+  .lightbox .caption a {
+    color: #93c5fd;
+    border-bottom: 1px solid transparent;
+    transition: border-color .2s;
+  }
+  .lightbox .caption a:hover { border-bottom-color: #93c5fd; }
+
+  body.lightbox-open { overflow: hidden; }
+
+  /* ──────────────────────────────────────────
      MANIFESTO
   ────────────────────────────────────────── */
   section.manifesto {
@@ -817,7 +1125,8 @@
 
   /* Tablets */
   @media (max-width: 980px) {
-    .grid-3, .principles-grid { grid-template-columns: 1fr 1fr; }
+    .grid-3, .principles-grid, .tours-grid { grid-template-columns: 1fr 1fr; }
+    .tours-grid > :nth-child(3) { grid-column: 1 / -1; max-width: 50%; margin: 0 auto; }
     .stat-strip { grid-template-columns: 1fr 1fr; }
     .stat-strip .item:nth-child(2) { border-right: 0; }
     .stat-strip .item:nth-child(1),
@@ -866,11 +1175,17 @@
 
     /* Sections — shorter vertical rhythm */
     section.suite,
+    section.tours,
     section.principles,
     section.manifesto,
     section.cta-band {
       padding: 64px 0;
     }
+
+    /* Tours — stack tiles */
+    .tours-grid { grid-template-columns: 1fr; gap: 14px; }
+    .poster .word { font-size: 26px; bottom: 16px; left: 18px; }
+    .poster .play { width: 56px; height: 56px; }
 
     .sec-head { margin-bottom: 32px; }
     .sec-head h2 { font-size: clamp(28px, 8vw, 40px); }
@@ -958,6 +1273,7 @@
     </a>
     <nav class="main">
       <a href="#suite">Suite</a>
+      <a href="#tours">Tours</a>
       <a href="#manifesto">Manifesto</a>
       <a href="#principles">How we ship</a>
       <a href="#contact">Contact</a>
@@ -1077,6 +1393,114 @@
   </div>
 </section>
 
+<!-- TOURS -->
+<section class="tours" id="tours">
+  <div class="shell">
+    <div class="sec-head">
+      <span class="eyebrow">See it work</span>
+      <h2>Quick tours, one per app.</h2>
+      <p>About a minute each. Real screens, real data — no slideware.</p>
+    </div>
+
+    <div class="tours-grid">
+
+      <button
+        class="tour-tile"
+        type="button"
+        data-video=""
+        data-name="pzip"
+        data-role="Dispatch &amp; CRM"
+        data-domain="pzip.ai"
+        data-blurb="A minute through pzip — add a job, assign a tech, send the customer text, close out and invoice. All on one screen.">
+        <div class="poster">
+          <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M5.5 24.5 L16 6.5 L26.5 24.5 Z" fill="currentColor"/>
+            <path d="M13 19 L16 14 L19 19" fill="none" stroke="#93c5fd" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+          </svg>
+          <span class="duration">75s</span>
+          <div class="word">pzip<span class="dot">.</span></div>
+          <span class="play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5 L19 12 L7 19 Z"/></svg>
+          </span>
+        </div>
+        <div class="meta">
+          <span class="name">pzip.ai</span>
+          <span class="role">Dispatch &amp; CRM · 75s</span>
+        </div>
+      </button>
+
+      <button
+        class="tour-tile"
+        type="button"
+        data-video=""
+        data-name="psupp"
+        data-role="Diagnostics desk"
+        data-domain="psupp.ai"
+        data-blurb="A minute through psupp — type a symptom, get a cited answer in four seconds, click the citation to see the actual manual page.">
+        <div class="poster">
+          <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M5.5 24.5 L16 6.5 L26.5 24.5 Z" fill="currentColor"/>
+            <path d="M13 19 L16 14 L19 19" fill="none" stroke="#93c5fd" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+          </svg>
+          <span class="duration">60s</span>
+          <div class="word">psupp<span class="dot">.</span></div>
+          <span class="play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5 L19 12 L7 19 Z"/></svg>
+          </span>
+        </div>
+        <div class="meta">
+          <span class="name">psupp.ai</span>
+          <span class="role">Diagnostics desk · 60s</span>
+        </div>
+      </button>
+
+      <button
+        class="tour-tile"
+        type="button"
+        data-video=""
+        data-name="pquote"
+        data-role="Quoting generator"
+        data-domain="pquote.ai"
+        data-blurb="A minute through pquote — type an address, drop in a few photos, watch a numbered branded estimate generate. Twenty-four minutes versus ninety seconds.">
+        <div class="poster">
+          <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M5.5 24.5 L16 6.5 L26.5 24.5 Z" fill="currentColor"/>
+            <path d="M13 19 L16 14 L19 19" fill="none" stroke="#93c5fd" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+          </svg>
+          <span class="duration">70s</span>
+          <div class="word">pquote<span class="dot">.</span></div>
+          <span class="play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5 L19 12 L7 19 Z"/></svg>
+          </span>
+        </div>
+        <div class="meta">
+          <span class="name">pquote.ai</span>
+          <span class="role">Quoting generator · 70s</span>
+        </div>
+      </button>
+
+    </div>
+  </div>
+</section>
+
+<!-- LIGHTBOX (single, reused) -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" hidden>
+  <button class="close" type="button" aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M6 6 L18 18 M18 6 L6 18"/>
+    </svg>
+  </button>
+  <div class="frame">
+    <div class="video-wrap">
+      <!-- Video element rendered into here at open time -->
+    </div>
+    <div class="caption">
+      <span id="lightbox-title">—</span>
+      <a id="lightbox-link" href="#" target="_blank" rel="noopener">Open app ↗</a>
+    </div>
+  </div>
+</div>
+
 <!-- MANIFESTO -->
 <section class="manifesto" id="manifesto">
   <div class="shell">
@@ -1140,6 +1564,77 @@
         card.style.setProperty('--mx', ((e.clientX - r.left) / r.width  * 100) + '%');
         card.style.setProperty('--my', ((e.clientY - r.top)  / r.height * 100) + '%');
       });
+    });
+  })();
+
+  // Tour video lightbox
+  (function () {
+    const lb       = document.getElementById('lightbox');
+    if (!lb) return;
+    const wrap     = lb.querySelector('.video-wrap');
+    const titleEl  = document.getElementById('lightbox-title');
+    const linkEl   = document.getElementById('lightbox-link');
+    const closeBtn = lb.querySelector('.close');
+
+    const open = (tile) => {
+      const src    = tile.dataset.video || '';
+      const name   = tile.dataset.name || '';
+      const role   = tile.dataset.role || '';
+      const domain = tile.dataset.domain || '';
+      const blurb  = tile.dataset.blurb || '';
+
+      titleEl.textContent = name + (role ? ' — ' + role : '');
+      if (domain) {
+        linkEl.href = 'https://' + domain;
+        linkEl.textContent = 'Open ' + domain + ' ↗';
+        linkEl.style.display = '';
+      } else {
+        linkEl.style.display = 'none';
+      }
+
+      // Render video OR placeholder
+      wrap.innerHTML = '';
+      if (src) {
+        const v = document.createElement('video');
+        v.src = src;
+        v.controls = true;
+        v.autoplay = true;
+        v.playsInline = true;
+        v.preload = 'auto';
+        wrap.appendChild(v);
+      } else {
+        wrap.insertAdjacentHTML('beforeend',
+          '<div class="placeholder">'
+          + '<h4>' + name + '<span class="dot">.</span> tour</h4>'
+          + '<p>' + blurb + '</p>'
+          + '<a class="pill-link" href="https://' + domain + '" target="_blank" rel="noopener">Try ' + domain + ' →</a>'
+          + '</div>'
+        );
+      }
+
+      lb.hidden = false;
+      requestAnimationFrame(() => lb.classList.add('open'));
+      document.body.classList.add('lightbox-open');
+    };
+
+    const close = () => {
+      lb.classList.remove('open');
+      document.body.classList.remove('lightbox-open');
+      const v = wrap.querySelector('video');
+      if (v) { try { v.pause(); } catch (e) {} }
+      setTimeout(() => {
+        lb.hidden = true;
+        wrap.innerHTML = '';
+      }, 250);
+    };
+
+    document.querySelectorAll('.tour-tile').forEach((tile) => {
+      tile.addEventListener('click', () => open(tile));
+    });
+    closeBtn.addEventListener('click', close);
+    lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lb.classList.contains('open')) close();
     });
   })();
 

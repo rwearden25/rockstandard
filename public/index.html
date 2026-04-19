@@ -946,26 +946,55 @@
     position: relative;
   }
   .quote {
-    max-width: 24ch;
+    max-width: min(960px, 92%);
     margin: 0 auto;
     text-align: center;
   }
+  .quote .lead {
+    display: block;
+    margin: 0 0 16px;
+    font-family: var(--font);
+    font-size: clamp(13px, 1.1vw, 14px);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    color: var(--accent);
+  }
   .quote blockquote {
     margin: 0;
-    font-size: clamp(34px, 5vw, 64px);
-    line-height: 1.08;
-    letter-spacing: -.03em;
+    font-size: clamp(30px, 4.6vw, 56px);
+    line-height: 1.15;
+    letter-spacing: -.025em;
     font-weight: 500;
     color: var(--ink);
     max-width: none;
   }
   .quote blockquote .accent { color: var(--accent); }
+  .quote blockquote .denials {
+    display: block;
+    margin: 14px 0;
+    font-size: clamp(17px, 1.6vw, 22px);
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--ink-3);
+    letter-spacing: -.005em;
+  }
   .quote .signoff {
-    margin-top: 32px;
-    font-size: 14px;
+    margin-top: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
     color: var(--mute);
     font-weight: 500;
-    letter-spacing: .02em;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .quote .signoff::before,
+  .quote .signoff::after {
+    content: "";
+    width: 28px; height: 1px;
+    background: var(--hairline);
   }
 
   /* ──────────────────────────────────────────
@@ -1505,12 +1534,13 @@
 <section class="manifesto" id="manifesto">
   <div class="shell">
     <div class="quote">
+      <span class="lead">— Manifesto —</span>
       <blockquote>
-        We build the tools we needed first.<br/>
-        No onboarding calls. No seat counts.<br/>
+        We built the tools we needed first.
+        <span class="denials">No onboarding calls. No seat math. No platform creep.</span>
         Just software that <span class="accent">shows up Monday</span>.
       </blockquote>
-      <div class="signoff">— RockStandard · Texas · est. 2026</div>
+      <div class="signoff">RockStandard · Texas · est. 2026</div>
     </div>
   </div>
 </section>

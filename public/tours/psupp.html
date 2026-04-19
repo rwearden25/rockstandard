@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>psupp — tour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/tours/_tour.css" />
+<style>
+  /* psupp-specific mock styles */
+  .psupp-app {
+    width: min(820px, 96%);
+  }
+  .chat-shell {
+    display: grid;
+    grid-template-columns: 1fr;
+    height: 460px;
+    grid-template-rows: 1fr auto;
+    background: var(--surface);
+    transition: grid-template-columns .55s cubic-bezier(.2,.8,.2,1);
+  }
+  .chat-shell.with-side {
+    grid-template-columns: 1fr 280px;
+    grid-template-rows: 1fr auto;
+  }
+  .chat {
+    grid-row: 1 / 2;
+    grid-column: 1;
+    overflow: hidden;
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .chat-shell.with-side .chat { grid-column: 1; }
+
+  .msg {
+    max-width: 92%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: msg-in .45s forwards;
+  }
+  .msg.user {
+    align-self: flex-end;
+    background: var(--ink);
+    color: var(--bg);
+    border-bottom-right-radius: 4px;
+    max-width: 78%;
+  }
+  .msg.assistant {
+    align-self: flex-start;
+    background: #f5f3ec;
+    color: var(--ink);
+    border: 1px solid var(--hairline);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.assistant .head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--mute);
+    margin-bottom: 8px;
+    font-weight: 500;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .msg.assistant .head .badge {
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .msg.assistant ol {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 8px;
+  }
+  .msg.assistant li {
+    line-height: 1.45;
+  }
+  .msg .cite {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    padding: 1px 7px;
+    background: var(--accent-soft);
+    color: var(--accent-2);
+    border: 1px solid #c7d2fe;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    cursor: pointer;
+  }
+  .msg .cite::before {
+    content: "📄";
+    font-size: 9px;
+  }
+  .msg.assistant .stream { font-family: var(--font); }
+  .msg.assistant .stream::after {
+    content: "▍";
+    color: var(--accent);
+    margin-left: 1px;
+    animation: caret 1s steps(1) infinite;
+  }
+  .msg.assistant.done .stream::after { display: none; }
+  @keyframes msg-in {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes caret { 50% { opacity: 0; } }
+
+  .input-row {
+    grid-row: 2 / 3;
+    grid-column: 1 / -1;
+    padding: 14px 22px 18px;
+    border-top: 1px solid var(--hairline);
+    background: linear-gradient(180deg, #fbfaf6, #f3efe7);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .input-row .input {
+    flex: 1;
+    padding: 11px 14px;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    font-size: 13.5px;
+    color: var(--ink);
+    min-height: 19px;
+    font-family: var(--font);
+  }
+  .input-row .input.empty { color: var(--mute); }
+  .input-row .input.typing {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.10);
+  }
+  .input-row .send-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .25s;
+  }
+  .input-row .send-btn.ready { background: var(--accent); }
+
+  /* Side panel — manual page */
+  .side-panel {
+    grid-column: 2;
+    grid-row: 1 / 2;
+    border-left: 1px solid var(--hairline);
+    background: #fafaf6;
+    padding: 16px 16px 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity .45s, transform .45s;
+  }
+  .chat-shell.with-side .side-panel {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .side-panel .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--mute);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 600;
+  }
+  .side-panel .panel-head .x {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mute);
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .manual-page {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    padding: 14px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 10px -2px rgba(10,10,10,0.05);
+  }
+  .manual-page .page-head {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+    font-size: 11px;
+    letter-spacing: .02em;
+  }
+  .manual-page .page-head .pn { color: var(--mute); font-weight: 400; }
+  .manual-page p {
+    margin: 0 0 8px;
+    color: var(--ink-3);
+  }
+  .manual-page .highlight {
+    background: rgba(254, 240, 138, 0.55);
+    color: var(--ink);
+    padding: 1px 2px;
+    border-radius: 2px;
+  }
+  .manual-page .spec {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 10px;
+    font-family: ui-monospace, monospace;
+    font-size: 10.5px;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--hairline);
+    color: var(--ink);
+  }
+  .manual-page .spec span:nth-child(odd) { color: var(--ink-3); }
+
+  /* Outro */
+  .outro h2 {
+    margin: 0;
+    font-size: clamp(34px, 5vw, 56px);
+    font-weight: 600;
+    letter-spacing: -.025em;
+    text-align: center;
+  }
+  .outro h2 .accent { color: var(--accent); }
+  .outro .stat-row {
+    margin-top: 18px;
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+  }
+  .outro .stat-row .stat {
+    text-align: center;
+  }
+  .outro .stat-row .stat .num {
+    font-size: 34px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -.02em;
+  }
+  .outro .stat-row .stat .label {
+    font-size: 11px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+  .outro .pill-link {
+    margin-top: 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 14px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="brand-corner">
+    <svg viewBox="0 0 22 22" aria-hidden="true">
+      <rect x="1" y="1" width="20" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M5.5 16 L11 6 L16.5 16 Z" fill="currentColor" />
+    </svg>
+    <span>RockStandard</span>
+    <span class="sep">/ psupp tour</span>
+  </div>
+
+  <div class="scenes">
+
+    <!-- Scene 1: Title -->
+    <div class="scene title active" data-scene="1">
+      <div class="mark-big">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M5.5 24.5 L16 6.5 L26.5 24.5 Z" fill="currentColor"/>
+          <path d="M13 19 L16 14 L19 19" fill="none" stroke="#93c5fd" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>psupp<span class="dot">.</span></h1>
+      <div class="role">Diagnostics desk · 40-second tour</div>
+    </div>
+
+    <!-- Scene 2: Empty input + typing -->
+    <div class="scene" data-scene="2">
+      <div class="mock-window psupp-app">
+        <div class="topbar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <span class="url">app.psupp.ai</span>
+        </div>
+        <div class="chat-shell" id="shell-2">
+          <div class="chat" id="chat-2">
+            <!-- empty until typing starts -->
+          </div>
+          <div class="input-row">
+            <div class="input typing" id="input-2">Honda GX390 won&rsquo;t start, has fuel, no spark</div>
+            <div class="send-btn ready">↑</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 3: Streaming answer with citations -->
+    <div class="scene" data-scene="3">
+      <div class="mock-window psupp-app">
+        <div class="topbar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <span class="url">app.psupp.ai</span>
+        </div>
+        <div class="chat-shell" id="shell-3">
+          <div class="chat" id="chat-3">
+            <div class="msg user">Honda GX390 won&rsquo;t start, has fuel, no spark</div>
+            <div class="msg assistant" id="answer-3" style="animation-delay: .35s;">
+              <div class="head"><span class="badge">psupp</span> 4 sources</div>
+              <div class="stream" id="stream-3"></div>
+            </div>
+          </div>
+          <div class="input-row">
+            <div class="input empty">Ask a follow-up…</div>
+            <div class="send-btn">↑</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 4: Click citation, side panel opens -->
+    <div class="scene" data-scene="4">
+      <div class="mock-window psupp-app">
+        <div class="topbar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <span class="url">app.psupp.ai · GX390 manual · p.47</span>
+        </div>
+        <div class="chat-shell with-side" id="shell-4">
+          <div class="chat">
+            <div class="msg user">Honda GX390 won&rsquo;t start, has fuel, no spark</div>
+            <div class="msg assistant done">
+              <div class="head"><span class="badge">psupp</span> 4 sources</div>
+              <ol>
+                <li>Check the kill-switch wire (yellow). Disconnect at coil.<span class="cite">GX390 manual · p.47</span></li>
+                <li>Test ignition coil resistance — primary 0.7–1.0Ω, secondary 7–11kΩ.<span class="cite">GX390 manual · p.47</span></li>
+                <li>Inspect spark plug gap (0.7–0.8 mm) and replace if fouled.<span class="cite">GX390 manual · p.51</span></li>
+              </ol>
+            </div>
+          </div>
+          <div class="side-panel">
+            <div class="panel-head"><span>GX390 service manual</span><span class="x">×</span></div>
+            <div class="manual-page">
+              <div class="page-head"><span>SECTION 7 — Ignition</span><span class="pn">p. 47</span></div>
+              <p>The ignition system uses a transistorized magneto-type coil mounted on the engine block. <span class="highlight">No-spark conditions are most often caused by a short in the kill-switch wire (yellow), a failed coil, or a fouled spark plug.</span></p>
+              <p>Procedure for diagnosis:</p>
+              <p>1. Disconnect the kill-switch wire at the coil terminal. Test for spark.</p>
+              <p>2. If spark returns, the kill switch or wire is at fault.</p>
+              <div class="spec">
+                <span>Coil — primary winding</span><span>0.7 – 1.0 Ω</span>
+                <span>Coil — secondary winding</span><span>7 – 11 kΩ</span>
+                <span>Plug gap</span><span>0.7 – 0.8 mm</span>
+              </div>
+            </div>
+          </div>
+          <div class="input-row">
+            <div class="input empty">Ask a follow-up…</div>
+            <div class="send-btn">↑</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 5: Outro -->
+    <div class="scene title outro" data-scene="5">
+      <div class="mark-big">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M5.5 24.5 L16 6.5 L26.5 24.5 Z" fill="currentColor"/>
+          <path d="M13 19 L16 14 L19 19" fill="none" stroke="#93c5fd" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2>psupp<span class="dot">.</span>ai</h2>
+      <div class="stat-row">
+        <div class="stat"><div class="num">282</div><div class="label">manuals</div></div>
+        <div class="stat"><div class="num">~4s</div><div class="label">to answer</div></div>
+        <div class="stat"><div class="num">100%</div><div class="label">cited</div></div>
+      </div>
+      <a class="pill-link" href="https://psupp.ai" target="_blank" rel="noopener">Try psupp.ai →</a>
+    </div>
+
+  </div>
+
+  <div class="caption" id="caption"></div>
+  <div class="progress"><span id="bar"></span></div>
+
+</div>
+
+<script>
+  const scenes = [
+    { dur: 4500, caption: "You've got 282 manufacturer manuals — and none of them open well on a phone." },
+    { dur: 6500, caption: "Type the symptom. psupp is just a chat box.", run: typeQuestion },
+    { dur: 12000, caption: "Real answer in seconds — and every line is cited to the actual manual page.", run: streamAnswer },
+    { dur: 9000, caption: "Click the citation, see the source. No black boxes." },
+    { dur: 5000, caption: "psupp.ai · the manual, in plain English." }
+  ];
+
+  const total = scenes.reduce((a, s) => a + s.dur, 0);
+  const sceneEls = Array.from(document.querySelectorAll('.scene'));
+  const captionEl = document.getElementById('caption');
+  const barEl = document.getElementById('bar');
+
+  function showScene(i) {
+    sceneEls.forEach((el, idx) => el.classList.toggle('active', idx === i));
+    const cap = scenes[i].caption;
+    captionEl.classList.remove('show');
+    setTimeout(() => {
+      captionEl.textContent = cap;
+      captionEl.classList.add('show');
+    }, 200);
+    if (typeof scenes[i].run === 'function') scenes[i].run();
+  }
+
+  function tickProgress() {
+    const start = performance.now();
+    function step() {
+      const now = performance.now() - start;
+      barEl.style.width = Math.min(100, (now / total) * 100) + '%';
+      if (now < total) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function play() {
+    let i = 0;
+    showScene(0);
+    tickProgress();
+    function next() {
+      i++;
+      if (i >= scenes.length) {
+        setTimeout(() => location.reload(), 4000);
+        return;
+      }
+      showScene(i);
+      setTimeout(next, scenes[i].dur);
+    }
+    setTimeout(next, scenes[0].dur);
+  }
+
+  // Type the question into the input field for scene 2
+  function typeQuestion() {
+    const input = document.getElementById('input-2');
+    if (!input) return;
+    const txt = "Honda GX390 won't start, has fuel, no spark";
+    input.classList.remove('empty');
+    input.classList.add('typing');
+    let i = 0;
+    input.textContent = '';
+    const t = setInterval(() => {
+      input.textContent = txt.slice(0, ++i);
+      if (i >= txt.length) clearInterval(t);
+    }, 60);
+  }
+
+  // Stream the answer in scene 3 token-by-token
+  function streamAnswer() {
+    const stream = document.getElementById('stream-3');
+    const answerWrap = document.getElementById('answer-3');
+    if (!stream) return;
+    const tokens = [
+      "1. Check the kill-switch wire (yellow). Disconnect at coil. ",
+      '<span class="cite">GX390 · p.47</span><br/><br/>',
+      "2. Test ignition coil resistance — primary 0.7–1.0Ω, secondary 7–11kΩ. ",
+      '<span class="cite">GX390 · p.47</span><br/><br/>',
+      "3. Inspect spark plug gap (0.7–0.8 mm) and replace if fouled. ",
+      '<span class="cite">GX390 · p.51</span>'
+    ];
+    stream.innerHTML = '';
+    let i = 0;
+    const t = setInterval(() => {
+      stream.innerHTML += tokens[i];
+      i++;
+      if (i >= tokens.length) {
+        clearInterval(t);
+        setTimeout(() => answerWrap.classList.add('done'), 400);
+      }
+    }, 1100);
+  }
+
+  window.addEventListener('load', play);
+</script>
+
+</body>
+</html>

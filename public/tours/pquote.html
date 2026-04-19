@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>pquote — tour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/tours/_tour.css" />
+<style>
+  /* pquote-specific mock styles */
+  .pquote-app { width: min(820px, 96%); }
+
+  .quote-shell {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    height: 460px;
+    background: var(--surface);
+  }
+  .map-panel {
+    position: relative;
+    background:
+      radial-gradient(circle at 30% 20%, #2a3447 0%, #1f2737 40%, #131826 100%);
+    overflow: hidden;
+  }
+  /* Mock satellite — abstract aerial shapes */
+  .map-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 120px 80px at 25% 35%, #3a4252 0%, transparent 60%),
+      radial-gradient(ellipse 90px 60px at 75% 70%, #404858 0%, transparent 60%),
+      radial-gradient(ellipse 70px 50px at 60% 25%, #353c4a 0%, transparent 60%),
+      linear-gradient(45deg, transparent 49%, rgba(255,255,255,0.04) 49%, rgba(255,255,255,0.04) 51%, transparent 51%);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 12px 12px;
+  }
+  .map-panel .road {
+    position: absolute;
+    height: 14px;
+    background: #565e6f;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .map-panel .road.h { left: 0; right: 0; top: 60%; }
+  .map-panel .road.v { top: 0; bottom: 0; left: 22%; width: 14px; height: auto; }
+
+  /* The lot trace — animated SVG drawing */
+  .map-panel svg.lot {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px;
+    height: 200px;
+    z-index: 2;
+    overflow: visible;
+  }
+  .map-panel svg.lot polygon {
+    fill: rgba(30, 64, 175, 0.20);
+    stroke: #93c5fd;
+    stroke-width: 2.5;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    filter: drop-shadow(0 0 6px rgba(147, 197, 253, 0.5));
+  }
+  .scene[data-scene="3"].active .map-panel svg.lot polygon {
+    animation: draw-lot 2.4s ease-out forwards;
+  }
+  @keyframes draw-lot {
+    to { stroke-dashoffset: 0; fill: rgba(30, 64, 175, 0.25); }
+  }
+
+  .map-panel svg.lot .pin {
+    opacity: 0;
+    transform-origin: center 26px;
+  }
+  .scene[data-scene="3"].active .map-panel svg.lot .pin {
+    animation: pin-drop .55s cubic-bezier(.2, 1.4, .4, 1) .8s forwards;
+  }
+  @keyframes pin-drop {
+    0% { opacity: 0; transform: translateY(-30px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .map-panel .lot-label {
+    position: absolute;
+    top: 18px; left: 18px;
+    background: rgba(10, 10, 10, 0.7);
+    color: var(--bg);
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .02em;
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 3;
+  }
+  .map-panel .lot-stats {
+    position: absolute;
+    bottom: 16px; left: 16px;
+    background: rgba(10, 10, 10, 0.78);
+    color: var(--bg);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    z-index: 3;
+    line-height: 1.45;
+    opacity: 0;
+  }
+  .scene[data-scene="3"].active .map-panel .lot-stats {
+    animation: fade-in .5s ease 1.6s forwards;
+  }
+  @keyframes fade-in { to { opacity: 1; } }
+  .map-panel .lot-stats .big {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--bg);
+    letter-spacing: -.015em;
+  }
+  .map-panel .lot-stats .label {
+    font-size: 10px;
+    color: rgba(250,250,247,0.65);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  /* Right panel — sidebar */
+  .side {
+    padding: 22px 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow: hidden;
+  }
+  .side h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -.015em;
+  }
+  .side .sub {
+    font-size: 12px;
+    color: var(--mute);
+    margin-top: -10px;
+  }
+  .field-block {
+    display: grid;
+    gap: 5px;
+  }
+  .field-block label {
+    font-size: 10px;
+    color: var(--mute);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .field-block .input {
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .field-block .input.typing {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, .10);
+  }
+
+  /* Photo upload zone */
+  .photo-zone {
+    border: 2px dashed var(--hairline);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    color: var(--mute);
+    font-size: 12px;
+    transition: border-color .25s, background .25s;
+  }
+  .photo-zone.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .photo-grid {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .photo {
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #cfc7b3, #a89b7c);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(.92);
+    transition: opacity .35s, transform .35s;
+  }
+  .photo.show { opacity: 1; transform: scale(1); }
+  .photo.p1 { background: linear-gradient(135deg, #6b6354, #3f3a32); }
+  .photo.p2 { background: linear-gradient(135deg, #8a7c5e, #5c5238); }
+  .photo.p3 { background: linear-gradient(135deg, #4a443a, #2a261f); }
+  .photo .tag {
+    position: absolute;
+    bottom: 2px; left: 2px; right: 2px;
+    background: rgba(10,10,10,0.78);
+    color: var(--bg);
+    font-size: 8.5px;
+    font-weight: 600;
+    padding: 2px 4px;
+    border-radius: 3px;
+    text-align: center;
+    letter-spacing: .02em;
+    opacity: 0;
+    transition: opacity .35s;
+  }
+  .photo.tagged .tag { opacity: 1; }
+
+  /* Line items */
+  .lines {
+    background: #fbfaf6;
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 12.5px;
+    display: grid;
+    gap: 6px;
+  }
+  .lines .line {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-2);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity .35s, transform .35s;
+  }
+  .lines .line.show { opacity: 1; transform: translateX(0); }
+  .lines .total {
+    margin-top: 4px;
+    padding-top: 8px;
+    border-top: 1px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .lines .total .num {
+    transition: color .25s;
+  }
+  .lines .total .num.bump {
+    color: var(--accent);
+    animation: bump .35s;
+  }
+  @keyframes bump {
+    50% { transform: scale(1.06); }
+  }
+
+  /* Margin slider */
+  .slider {
+    display: grid;
+    gap: 5px;
+  }
+  .slider .row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--mute);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 600;
+  }
+  .slider .row .val {
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+  }
+  .slider .track {
+    position: relative;
+    height: 4px;
+    background: var(--hairline);
+    border-radius: 999px;
+  }
+  .slider .fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 32%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width .55s ease;
+  }
+  .slider .knob {
+    position: absolute;
+    top: 50%;
+    left: 32%;
+    transform: translate(-50%, -50%);
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 2px 6px rgba(10,10,10,0.20);
+    transition: left .55s ease;
+  }
+  .slider.bump .fill { width: 48%; }
+  .slider.bump .knob { left: 48%; }
+
+  /* PDF preview scene */
+  .pdf-stage {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 32px;
+    align-items: center;
+    max-width: 760px;
+  }
+  .pdf-doc {
+    width: 280px;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    box-shadow:
+      0 30px 60px -20px rgba(10,10,10,0.30),
+      0 6px 12px -2px rgba(10,10,10,0.10);
+    padding: 22px 24px;
+    font-size: 10.5px;
+    color: var(--ink-2);
+    transform: rotate(-2deg);
+  }
+  .pdf-doc .pdf-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+  .pdf-doc .pdf-head .logo {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -.015em;
+    color: var(--ink);
+  }
+  .pdf-doc .pdf-head .qnum {
+    font-size: 9px;
+    color: var(--mute);
+    letter-spacing: .06em;
+    text-align: right;
+    line-height: 1.4;
+  }
+  .pdf-doc .qnum .b { display: block; font-weight: 700; color: var(--ink); font-size: 11px; }
+  .pdf-doc .to {
+    font-size: 9px;
+    color: var(--mute);
+    margin-bottom: 4px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .pdf-doc .client { font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 14px; }
+  .pdf-doc .pdf-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--hairline);
+    font-size: 9.5px;
+  }
+  .pdf-doc .pdf-line:last-of-type { border: 0; }
+  .pdf-doc .pdf-total {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 11px;
+  }
+  .pdf-doc .pdf-foot {
+    margin-top: 14px;
+    padding-top: 8px;
+    border-top: 1px solid var(--hairline);
+    font-size: 8.5px;
+    color: var(--mute);
+    line-height: 1.5;
+  }
+
+  .pdf-copy { max-width: 320px; }
+  .pdf-copy h3 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -.02em;
+  }
+  .pdf-copy p {
+    margin: 0;
+    color: var(--ink-3);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .pdf-copy .send-btn {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .pdf-copy .sent {
+    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #14532d;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0;
+    animation: fade-in .5s ease 2s forwards;
+  }
+  .pdf-copy .sent .check {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #16a34a;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+
+  /* Outro */
+  .outro h2 {
+    margin: 0;
+    font-size: clamp(34px, 5vw, 56px);
+    font-weight: 600;
+    letter-spacing: -.025em;
+    text-align: center;
+  }
+  .outro h2 .accent { color: var(--accent); }
+  .outro .compare {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 18px;
+    align-items: center;
+    font-family: ui-monospace, monospace;
+  }
+  .outro .compare .col {
+    text-align: center;
+    padding: 14px 22px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+  }
+  .outro .compare .col .num {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -.02em;
+  }
+  .outro .compare .col.win .num { color: var(--accent); }
+  .outro .compare .col .label {
+    font-size: 10.5px;
+    color: var(--mute);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 600;
+    font-family: var(--font);
+  }
+  .outro .compare .vs {
+    font-size: 14px;
+    color: var(--mute);
+    font-weight: 700;
+    font-family: var(--font);
+  }
+  .outro .pill-link {
+    margin-top: 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 14px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="brand-corner">
+    <svg viewBox="0 0 22 22" aria-hidden="true">
+      <rect x="1" y="1" width="20" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M5.5 16 L11 6 L16.5 16 Z" fill="currentColor" />
+    </svg>
+    <span>RockStandard</span>
+    <span class="sep">/ pquote tour</span>
+  </div>
+
+  <div class="scenes">
+
+    <!-- Scene 1: Title -->
+    <div class="scene title active" data-scene="1">
+      <div class="mark-big">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M5.5 24.5 L16 6.5 L26.5 24.5 Z" fill="currentColor"/>
+          <path d="M13 19 L16 14 L19 19" fill="none" stroke="#93c5fd" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>pquote<span class="dot">.</span></h1>
+      <div class="role">Quoting generator · 50-second tour</div>
+    </div>
+
+    <!-- Scene 2: Address input -->
+    <div class="scene" data-scene="2">
+      <div class="mock-window pquote-app">
+        <div class="topbar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <span class="url">app.pquote.ai · new estimate</span>
+        </div>
+        <div class="quote-shell">
+          <div class="map-panel">
+            <span class="lot-label" id="lbl-2">— address required —</span>
+          </div>
+          <div class="side">
+            <h3>New estimate</h3>
+            <div class="sub">Start with an address</div>
+            <div class="field-block">
+              <label>Site address</label>
+              <div class="input typing" id="addr-input">5217 Memorial Dr, Houston TX</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 3: Map auto-trace -->
+    <div class="scene" data-scene="3">
+      <div class="mock-window pquote-app">
+        <div class="topbar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <span class="url">app.pquote.ai · 5217 Memorial Dr</span>
+        </div>
+        <div class="quote-shell">
+          <div class="map-panel">
+            <span class="road h"></span>
+            <span class="road v"></span>
+            <span class="lot-label">5217 Memorial Dr · Houston TX</span>
+            <svg class="lot" viewBox="0 0 280 200">
+              <polygon points="40,40 240,40 250,150 30,160" />
+              <g class="pin">
+                <circle cx="140" cy="100" r="5" fill="#fff" stroke="#1e40af" stroke-width="2"/>
+              </g>
+            </svg>
+            <div class="lot-stats">
+              <div class="big">34,820 sq ft</div>
+              <div class="label">auto-traced</div>
+            </div>
+          </div>
+          <div class="side">
+            <h3>5217 Memorial Dr</h3>
+            <div class="sub">Houston, TX</div>
+            <div class="field-block">
+              <label>Lot perimeter</label>
+              <div class="input">762 ft · 4 sides</div>
+            </div>
+            <div class="field-block">
+              <label>Surface</label>
+              <div class="input">Asphalt · seal-coated</div>
+            </div>
+            <div class="field-block">
+              <label>Photos</label>
+              <div class="photo-zone" id="zone-3">Drag in or take photos →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 4: Photo drop with AI tags -->
+    <div class="scene" data-scene="4">
+      <div class="mock-window pquote-app">
+        <div class="topbar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <span class="url">app.pquote.ai · 5217 Memorial Dr</span>
+        </div>
+        <div class="quote-shell">
+          <div class="map-panel">
+            <span class="road h"></span>
+            <span class="road v"></span>
+            <span class="lot-label">5217 Memorial Dr · Houston TX</span>
+            <svg class="lot" viewBox="0 0 280 200">
+              <polygon points="40,40 240,40 250,150 30,160" style="stroke-dashoffset: 0; fill: rgba(30, 64, 175, 0.25);" />
+            </svg>
+            <div class="lot-stats" style="opacity: 1;">
+              <div class="big">34,820 sq ft</div>
+              <div class="label">auto-traced</div>
+            </div>
+          </div>
+          <div class="side">
+            <h3>3 photos · scope detected</h3>
+            <div class="photo-zone active">AI tagging…</div>
+            <div class="photo-grid">
+              <div class="photo p1" id="ph1"><span class="tag">Sealcoat</span></div>
+              <div class="photo p2" id="ph2"><span class="tag">Hot-water degreaser</span></div>
+              <div class="photo p3" id="ph3"><span class="tag">Gum removal</span></div>
+            </div>
+            <div class="lines" style="margin-top: 6px;">
+              <div class="line" id="ln1"><span>Pressure wash · 34,820 sf</span><span>$2,610</span></div>
+              <div class="line" id="ln2"><span>Sealcoat (2 coats)</span><span>$1,890</span></div>
+              <div class="line" id="ln3"><span>Hot-water degrease</span><span>$420</span></div>
+              <div class="line" id="ln4"><span>Gum removal</span><span>$180</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 5: Margin slider + total -->
+    <div class="scene" data-scene="5">
+      <div class="mock-window pquote-app">
+        <div class="topbar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <span class="url">app.pquote.ai · 5217 Memorial Dr · margin</span>
+        </div>
+        <div class="quote-shell">
+          <div class="map-panel">
+            <span class="road h"></span>
+            <span class="road v"></span>
+            <span class="lot-label">5217 Memorial Dr · Houston TX</span>
+            <svg class="lot" viewBox="0 0 280 200">
+              <polygon points="40,40 240,40 250,150 30,160" style="stroke-dashoffset: 0; fill: rgba(30, 64, 175, 0.25);" />
+            </svg>
+            <div class="lot-stats" style="opacity: 1;">
+              <div class="big">34,820 sq ft</div>
+              <div class="label">auto-traced</div>
+            </div>
+          </div>
+          <div class="side">
+            <h3>Set your margin</h3>
+            <div class="lines">
+              <div class="line show"><span>Subtotal</span><span>$5,100</span></div>
+              <div class="line show"><span>Materials</span><span>$612</span></div>
+              <div class="line show"><span>Travel · 2 trucks</span><span>$240</span></div>
+              <div class="total"><span>Total</span><span class="num" id="total-5">$7,820</span></div>
+            </div>
+            <div class="slider" id="slider-5">
+              <div class="row"><span>Margin</span><span class="val" id="margin-val">32%</span></div>
+              <div class="track">
+                <div class="fill"></div>
+                <div class="knob"></div>
+              </div>
+            </div>
+            <div class="field-block">
+              <label>Generate</label>
+              <div class="input" style="text-align:center; background: var(--ink); color: var(--bg); border-color: var(--ink);">Build branded quote →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 6: PDF preview + sent -->
+    <div class="scene" data-scene="6">
+      <div class="pdf-stage">
+        <div class="pdf-doc">
+          <div class="pdf-head">
+            <div class="logo">RockStandard / SPW</div>
+            <div class="qnum">QUOTE<span class="b">Q-2026-0418</span></div>
+          </div>
+          <div class="to">prepared for</div>
+          <div class="client">Memorial Plaza Properties LLC</div>
+          <div class="pdf-line"><span>Pressure wash · 34,820 sf</span><span>$2,610</span></div>
+          <div class="pdf-line"><span>Sealcoat · 2 coats</span><span>$1,890</span></div>
+          <div class="pdf-line"><span>Hot-water degrease</span><span>$420</span></div>
+          <div class="pdf-line"><span>Gum removal</span><span>$180</span></div>
+          <div class="pdf-line"><span>Travel · 2 trucks</span><span>$240</span></div>
+          <div class="pdf-total"><span>Total</span><span>$8,460</span></div>
+          <div class="pdf-foot">Net 30 · Valid 30 days from 04/18/2026 · Standard Power Washing LLC · Texas</div>
+        </div>
+        <div class="pdf-copy">
+          <h3>Numbered. Branded. Sent.</h3>
+          <p>What you send is a numbered, branded PDF — your logo, your terms, your sequence. Hit send and it's in their inbox.</p>
+          <div class="send-btn">Send quote →</div>
+          <div class="sent"><span class="check">✓</span> Sent · 04:18 PM</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 7: Outro / time compare -->
+    <div class="scene title outro" data-scene="7">
+      <div class="mark-big">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M5.5 24.5 L16 6.5 L26.5 24.5 Z" fill="currentColor"/>
+          <path d="M13 19 L16 14 L19 19" fill="none" stroke="#93c5fd" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2>pquote<span class="dot">.</span>ai</h2>
+      <div class="compare">
+        <div class="col"><div class="num">24:11</div><div class="label">old way</div></div>
+        <div class="vs">vs</div>
+        <div class="col win"><div class="num">1:32</div><div class="label">with pquote</div></div>
+      </div>
+      <a class="pill-link" href="https://pquote.ai" target="_blank" rel="noopener">Try pquote.ai →</a>
+    </div>
+
+  </div>
+
+  <div class="caption" id="caption"></div>
+  <div class="progress"><span id="bar"></span></div>
+
+</div>
+
+<script>
+  const scenes = [
+    { dur: 4500, caption: "Quoting a parking lot used to take half an hour. Not anymore." },
+    { dur: 6500, caption: "pquote starts with one thing — an address." },
+    { dur: 9000, caption: "Mapbox loads the satellite, traces the lot, calculates square footage." },
+    { dur: 9000, caption: "Drop in photos. pquote tags what it sees and adds it to the scope.", run: revealPhotos },
+    { dur: 8000, caption: "You set the rate. You set the margin. pquote does the math.", run: bumpMargin },
+    { dur: 8000, caption: "Out the door: a numbered, branded PDF — straight to their inbox." },
+    { dur: 5000, caption: "Twenty-four minutes versus ninety seconds. Same quote." }
+  ];
+
+  const total = scenes.reduce((a, s) => a + s.dur, 0);
+  const sceneEls = Array.from(document.querySelectorAll('.scene'));
+  const captionEl = document.getElementById('caption');
+  const barEl = document.getElementById('bar');
+
+  function showScene(i) {
+    sceneEls.forEach((el, idx) => el.classList.toggle('active', idx === i));
+    const cap = scenes[i].caption;
+    captionEl.classList.remove('show');
+    setTimeout(() => {
+      captionEl.textContent = cap;
+      captionEl.classList.add('show');
+    }, 200);
+    if (typeof scenes[i].run === 'function') scenes[i].run();
+  }
+
+  function tickProgress() {
+    const start = performance.now();
+    function step() {
+      const now = performance.now() - start;
+      barEl.style.width = Math.min(100, (now / total) * 100) + '%';
+      if (now < total) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function play() {
+    let i = 0;
+    showScene(0);
+    tickProgress();
+    function next() {
+      i++;
+      if (i >= scenes.length) {
+        setTimeout(() => location.reload(), 4000);
+        return;
+      }
+      showScene(i);
+      setTimeout(next, scenes[i].dur);
+    }
+    setTimeout(next, scenes[0].dur);
+  }
+
+  function revealPhotos() {
+    const phs = ['ph1', 'ph2', 'ph3'];
+    const lns = ['ln1', 'ln2', 'ln3', 'ln4'];
+    phs.forEach((id, i) => {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('show');
+        setTimeout(() => { if (el) el.classList.add('tagged'); }, 600);
+      }, 500 + i * 800);
+    });
+    lns.forEach((id, i) => {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('show');
+      }, 3500 + i * 400);
+    });
+  }
+
+  function bumpMargin() {
+    setTimeout(() => {
+      const slider = document.getElementById('slider-5');
+      const total = document.getElementById('total-5');
+      const val = document.getElementById('margin-val');
+      if (slider) slider.classList.add('bump');
+      if (val) val.textContent = '48%';
+      if (total) {
+        total.textContent = '$8,460';
+        total.classList.add('bump');
+        setTimeout(() => total.classList.remove('bump'), 400);
+      }
+    }, 2000);
+  }
+
+  window.addEventListener('load', play);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RockStandard — small, sturdy software for the field</title>
+<meta name="description" content="RockStandard ships three small, opinionated tools for field-service operators: pzip.ai dispatch, psupp.ai diagnostics, pquote.ai quoting." />
+<meta name="theme-color" content="#0f1115" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --ink:        #0f1115;
+    --ink-2:      #1a1d24;
+    --rule:       #2a2e38;
+    --paper:      #f3efe7;
+    --paper-2:    #e8e2d3;
+    --bone:       #c9c2b1;
+    --rust:       #c2410c;
+    --rust-2:     #ea580c;
+    --kiln:       #7c2d12;
+    --moss:       #4d5a3a;
+    --mute:       #8b8678;
+    --display:    "Fraunces", ui-serif, Georgia, serif;
+    --mono:       "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* paper grain — subtle SVG noise overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: .06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  ::selection { background: var(--rust); color: var(--paper); }
+
+  /* ──────────────────────────────────────────
+     SHELL
+  ────────────────────────────────────────── */
+  .shell {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 4vw, 56px);
+  }
+
+  /* ──────────────────────────────────────────
+     TOP BAR
+  ────────────────────────────────────────── */
+  .top {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 24px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--bone);
+  }
+  .top .mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--paper);
+    font-weight: 500;
+  }
+  .top .mark .glyph {
+    width: 22px; height: 22px;
+    display: inline-block;
+  }
+  .top .meta {
+    text-align: center;
+    color: var(--mute);
+  }
+  .top .meta b { color: var(--paper); font-weight: 500; }
+  .top .nav {
+    display: inline-flex;
+    gap: 22px;
+    justify-self: end;
+  }
+  .top .nav a { position: relative; }
+  .top .nav a::after {
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: -6px;
+    height: 1px; background: var(--rust);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .top .nav a:hover::after { transform: scaleX(1); }
+
+  /* ──────────────────────────────────────────
+     HERO
+  ────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    padding: clamp(60px, 10vw, 140px) 0 clamp(60px, 9vw, 120px);
+    border-bottom: 1px solid var(--rule);
+    overflow: hidden;
+  }
+  .hero .stamp {
+    position: absolute;
+    top: 36px; right: clamp(20px, 4vw, 56px);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    color: var(--mute);
+    text-transform: uppercase;
+    text-align: right;
+    line-height: 1.7;
+  }
+  .hero .stamp .dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 999px;
+    background: var(--rust);
+    margin-right: 8px;
+    box-shadow: 0 0 0 4px rgba(194,65,12,.18);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(194,65,12,.18); }
+    50%      { box-shadow: 0 0 0 9px rgba(194,65,12,0);   }
+  }
+
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 350;
+    font-style: normal;
+    font-variation-settings: "opsz" 144, "SOFT" 25;
+    font-size: clamp(58px, 13.2vw, 220px);
+    line-height: .88;
+    letter-spacing: -.04em;
+    margin: 0;
+    color: var(--paper);
+  }
+  .hero h1 .ital {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+    color: var(--rust-2);
+  }
+  .hero h1 .amp {
+    font-style: italic;
+    color: var(--bone);
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    margin: 0 .04em;
+  }
+
+  .hero .lede {
+    margin-top: clamp(28px, 4vw, 56px);
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: clamp(24px, 6vw, 90px);
+    align-items: end;
+  }
+  .hero .lede .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--mute);
+    border-top: 1px solid var(--rule);
+    padding-top: 12px;
+  }
+  .hero .lede p {
+    font-family: var(--display);
+    font-weight: 360;
+    font-size: clamp(20px, 2.4vw, 30px);
+    line-height: 1.35;
+    letter-spacing: -.01em;
+    margin: 0;
+    color: var(--paper);
+    max-width: 30ch;
+  }
+  .hero .lede p em {
+    font-style: italic;
+    color: var(--rust-2);
+  }
+
+  /* CTA row */
+  .cta-row {
+    margin-top: clamp(40px, 6vw, 72px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 18px;
+    align-items: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    border: 1px solid var(--paper);
+    color: var(--paper);
+    background: transparent;
+    border-radius: 0;
+    transition: background .25s, color .25s, transform .25s;
+  }
+  .btn:hover { background: var(--paper); color: var(--ink); transform: translateY(-2px); }
+  .btn.solid { background: var(--rust); border-color: var(--rust); }
+  .btn.solid:hover { background: var(--rust-2); border-color: var(--rust-2); color: var(--paper); }
+  .btn .arrow {
+    display: inline-block;
+    transition: transform .25s;
+  }
+  .btn:hover .arrow { transform: translateX(4px); }
+
+  /* ──────────────────────────────────────────
+     MARQUEE / RULES
+  ────────────────────────────────────────── */
+  .rule-line {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 18px;
+    align-items: center;
+    padding: 14px 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--bone);
+    border-bottom: 1px solid var(--rule);
+  }
+  .rule-line .dash {
+    height: 1px;
+    background: linear-gradient(to right, var(--rule), transparent);
+  }
+
+  /* ──────────────────────────────────────────
+     PRODUCTS — the ledger
+  ────────────────────────────────────────── */
+  section.ledger {
+    padding: clamp(80px, 10vw, 140px) 0;
+    background: var(--paper);
+    color: var(--ink);
+    position: relative;
+  }
+  section.ledger::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(to bottom, transparent 0 31px, rgba(15,17,21,.04) 31px 32px);
+    pointer-events: none;
+  }
+
+  .ledger-head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+    gap: 40px;
+    margin-bottom: clamp(50px, 7vw, 90px);
+  }
+  .ledger-head .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--kiln);
+  }
+  .ledger-head h2 {
+    font-family: var(--display);
+    font-weight: 350;
+    font-variation-settings: "opsz" 144, "SOFT" 25;
+    font-size: clamp(38px, 5.4vw, 78px);
+    line-height: .98;
+    letter-spacing: -.025em;
+    margin: 14px 0 0;
+    color: var(--ink);
+  }
+  .ledger-head h2 em {
+    font-style: italic;
+    color: var(--rust);
+  }
+  .ledger-head .blurb {
+    font-family: var(--display);
+    font-weight: 360;
+    font-size: clamp(17px, 1.6vw, 21px);
+    line-height: 1.45;
+    color: var(--ink-2);
+    max-width: 42ch;
+    justify-self: end;
+  }
+
+  .products {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--ink);
+  }
+
+  .product {
+    display: grid;
+    grid-template-columns: 90px 1fr 1.6fr auto;
+    gap: clamp(20px, 3vw, 48px);
+    align-items: stretch;
+    padding: clamp(28px, 4vw, 42px) 0;
+    border-bottom: 1px solid var(--ink);
+    position: relative;
+    transition: background .35s;
+  }
+  .product:hover { background: var(--paper-2); }
+  .product:hover .product-name { transform: translateX(6px); }
+  .product:hover .arrow-btn { background: var(--ink); color: var(--paper); }
+
+  .product .index {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 350;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    font-size: clamp(50px, 6vw, 88px);
+    line-height: 1;
+    color: var(--rust);
+  }
+
+  .product .meta-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .product .badge {
+    align-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 11px;
+    border: 1px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .product .badge.live {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .product .badge.live::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 999px;
+    background: #6ee7b7;
+    box-shadow: 0 0 0 3px rgba(110,231,183,.25);
+  }
+  .product .badge.soon {
+    color: var(--kiln);
+    border-color: var(--kiln);
+  }
+  .product .domain {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .04em;
+    color: var(--mute);
+  }
+  .product .product-name {
+    font-family: var(--display);
+    font-weight: 380;
+    font-variation-settings: "opsz" 144, "SOFT" 25;
+    font-size: clamp(36px, 4.4vw, 62px);
+    line-height: 1;
+    letter-spacing: -.02em;
+    color: var(--ink);
+    transition: transform .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .product .product-name em {
+    font-style: italic;
+    color: var(--rust);
+  }
+
+  .product .desc {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+  .product .desc p {
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(16px, 1.4vw, 19px);
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+  .product .specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--mute);
+  }
+  .product .specs span {
+    border: 1px solid var(--bone);
+    padding: 3px 8px;
+  }
+
+  .product .arrow-col {
+    display: flex;
+    align-items: center;
+  }
+  .arrow-btn {
+    width: 64px; height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    background: transparent;
+    transition: background .25s, color .25s;
+  }
+  .arrow-btn svg { width: 22px; height: 22px; }
+
+  /* ──────────────────────────────────────────
+     MANIFESTO
+  ────────────────────────────────────────── */
+  section.manifesto {
+    padding: clamp(90px, 12vw, 160px) 0;
+    background: var(--ink);
+    color: var(--paper);
+    border-bottom: 1px solid var(--rule);
+  }
+  .manifesto-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: clamp(30px, 6vw, 90px);
+  }
+  .manifesto-grid .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--rust-2);
+    border-top: 1px solid var(--rust);
+    padding-top: 12px;
+  }
+  .manifesto-grid blockquote {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 350;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+    font-size: clamp(26px, 3.8vw, 56px);
+    line-height: 1.12;
+    letter-spacing: -.02em;
+    color: var(--paper);
+  }
+  .manifesto-grid blockquote em {
+    font-style: italic;
+    color: var(--rust-2);
+  }
+  .manifesto-grid blockquote .strike {
+    color: var(--mute);
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+  }
+  .signoff {
+    margin-top: clamp(40px, 5vw, 72px);
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--bone);
+  }
+  .signoff .line { flex: 1; height: 1px; background: var(--rule); }
+
+  /* ──────────────────────────────────────────
+     PRINCIPLES (three columns)
+  ────────────────────────────────────────── */
+  section.principles {
+    padding: clamp(70px, 9vw, 130px) 0;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .principles-head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 28px;
+    align-items: baseline;
+    margin-bottom: clamp(40px, 5vw, 60px);
+  }
+  .principles-head .marker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .2em;
+    color: var(--rust);
+    text-transform: uppercase;
+  }
+  .principles-head h3 {
+    font-family: var(--display);
+    font-weight: 350;
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 80;
+    font-size: clamp(28px, 3.4vw, 44px);
+    margin: 0;
+    line-height: 1.05;
+    letter-spacing: -.015em;
+  }
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(24px, 3vw, 50px);
+    border-top: 1px solid var(--ink);
+    padding-top: clamp(28px, 4vw, 44px);
+  }
+  .principle .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    color: var(--rust);
+  }
+  .principle h4 {
+    margin: 14px 0 12px;
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(22px, 2vw, 28px);
+    line-height: 1.1;
+    letter-spacing: -.01em;
+  }
+  .principle p {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  /* ──────────────────────────────────────────
+     CONTACT
+  ────────────────────────────────────────── */
+  section.contact {
+    padding: clamp(80px, 10vw, 140px) 0;
+    background: var(--ink);
+    color: var(--paper);
+    border-bottom: 1px solid var(--rule);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(30px, 6vw, 90px);
+    align-items: end;
+  }
+  .contact-grid h3 {
+    font-family: var(--display);
+    font-weight: 360;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+    font-size: clamp(40px, 6vw, 84px);
+    line-height: .95;
+    letter-spacing: -.025em;
+    margin: 0;
+  }
+  .contact-grid h3 em { font-style: italic; color: var(--rust-2); }
+  .contact-grid .right { font-size: 13px; color: var(--bone); }
+  .contact-grid .right ul {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .contact-grid .right li {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 12px;
+    border-top: 1px solid var(--rule);
+    padding-top: 10px;
+  }
+  .contact-grid .right li span:first-child {
+    color: var(--mute);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .contact-grid .right a:hover { color: var(--rust-2); }
+
+  /* ──────────────────────────────────────────
+     FOOTER
+  ────────────────────────────────────────── */
+  footer {
+    padding: 30px 0 36px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--mute);
+    background: var(--ink);
+  }
+  footer .row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 20px;
+  }
+  footer .center { text-align: center; color: var(--bone); }
+  footer .right  { text-align: right; }
+
+  /* ──────────────────────────────────────────
+     ENTRANCE ANIMATION
+  ────────────────────────────────────────── */
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      animation: reveal 1s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+    .reveal.d1 { animation-delay: .05s; }
+    .reveal.d2 { animation-delay: .20s; }
+    .reveal.d3 { animation-delay: .35s; }
+    .reveal.d4 { animation-delay: .50s; }
+    .reveal.d5 { animation-delay: .65s; }
+  }
+  @keyframes reveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ──────────────────────────────────────────
+     RESPONSIVE
+  ────────────────────────────────────────── */
+  @media (max-width: 880px) {
+    .top { grid-template-columns: 1fr auto; }
+    .top .meta { display: none; }
+    .hero .lede { grid-template-columns: 1fr; gap: 18px; }
+    .ledger-head { grid-template-columns: 1fr; gap: 18px; }
+    .ledger-head .blurb { justify-self: start; }
+    .product {
+      grid-template-columns: 60px 1fr;
+      gap: 16px 20px;
+    }
+    .product .index { font-size: 48px; }
+    .product .meta-col { grid-column: 2; }
+    .product .desc { grid-column: 1 / -1; }
+    .product .arrow-col { grid-column: 1 / -1; justify-content: flex-end; }
+    .principles-head { grid-template-columns: 1fr; gap: 10px; }
+    .principles-grid { grid-template-columns: 1fr; gap: 32px; }
+    .manifesto-grid { grid-template-columns: 1fr; }
+    .signoff { grid-column: 1; }
+    .contact-grid { grid-template-columns: 1fr; gap: 30px; }
+    footer .row { grid-template-columns: 1fr; text-align: left; gap: 8px; }
+    footer .center, footer .right { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- TOP BAR -->
+  <header class="top">
+    <a class="mark" href="/">
+      <svg class="glyph" viewBox="0 0 22 22" aria-hidden="true">
+        <rect x="1" y="1" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M5 16 L11 5 L17 16 Z" fill="currentColor" />
+      </svg>
+      <span>RockStandard</span>
+    </a>
+    <div class="meta">
+      Established <b>2026</b> · Three tools, shipped from the field
+    </div>
+    <nav class="nav">
+      <a href="#suite">Suite</a>
+      <a href="#manifesto">Manifesto</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="stamp reveal d1">
+      <span class="dot"></span>NEW · LAUNCHING 2026<br/>
+      Vol. 01 · Issue 01
+    </div>
+
+    <h1 class="reveal d2">
+      Rock<span class="amp">·</span><span class="ital">Standard</span>
+    </h1>
+
+    <div class="lede">
+      <div class="label reveal d3">§ Field-tested software,<br/>built one tool at a time.</div>
+      <p class="reveal d4">
+        Three small, opinionated apps for crews who&nbsp;<em>do the work</em> —
+        dispatch, diagnose, quote — sharing one login and a single bill.
+      </p>
+    </div>
+
+    <div class="cta-row reveal d5">
+      <a class="btn solid" href="#suite">
+        See the suite <span class="arrow">→</span>
+      </a>
+      <a class="btn" href="https://pzip.ai" target="_blank" rel="noopener">
+        Open pzip.ai <span class="arrow">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- RULE -->
+  <div class="rule-line">
+    <span>// Index</span>
+    <span class="dash"></span>
+    <span>03 tools · 01 login · 01 invoice</span>
+  </div>
+</div>
+
+<!-- LEDGER / PRODUCTS -->
+<section class="ledger" id="suite">
+  <div class="shell">
+    <div class="ledger-head">
+      <div>
+        <div class="eyebrow">§ 02 — The Suite</div>
+        <h2>Small tools that <em>earn their keep</em>.</h2>
+      </div>
+      <p class="blurb">
+        Each app does one job for one kind of operator. Use one, use all three —
+        the ledger keeps itself.
+      </p>
+    </div>
+
+    <div class="products">
+
+      <a class="product" href="https://pzip.ai" target="_blank" rel="noopener">
+        <div class="index">01</div>
+        <div class="meta-col">
+          <span class="badge live">LIVE</span>
+          <span class="domain">pzip.ai</span>
+        </div>
+        <div class="desc">
+          <div class="product-name">pzip <em>—</em> dispatch &amp; CRM</div>
+          <p>Schedule jobs, track customers, close the day. Single-tenant, multi-user, paid by the seat.</p>
+          <div class="specs">
+            <span>Field service</span><span>Postgres</span><span>$5.99 / mo</span><span>7-day trial</span>
+          </div>
+        </div>
+        <div class="arrow-col">
+          <span class="arrow-btn" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M5 12h14M13 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+
+      <a class="product" href="https://psupp.ai" target="_blank" rel="noopener">
+        <div class="index">02</div>
+        <div class="meta-col">
+          <span class="badge soon">SOON</span>
+          <span class="domain">psupp.ai</span>
+        </div>
+        <div class="desc">
+          <div class="product-name">psupp <em>—</em> diagnostics desk</div>
+          <p>An agentic support tool that reads 280+ manufacturer manuals and walks techs through repairs in plain English.</p>
+          <div class="specs">
+            <span>Equipment</span><span>Claude Sonnet 4.6</span><span>282 docs · tsvector</span>
+          </div>
+        </div>
+        <div class="arrow-col">
+          <span class="arrow-btn" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M5 12h14M13 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+
+      <a class="product" href="https://pquote.ai" target="_blank" rel="noopener">
+        <div class="index">03</div>
+        <div class="meta-col">
+          <span class="badge soon">SOON</span>
+          <span class="domain">pquote.ai</span>
+        </div>
+        <div class="desc">
+          <div class="product-name">pquote <em>—</em> quoting generator</div>
+          <p>Turn a site address and a few photos into a numbered, branded estimate — with maps, math, and margin baked in.</p>
+          <div class="specs">
+            <span>Estimating</span><span>Mapbox</span><span>Claude Opus 4.7</span>
+          </div>
+        </div>
+        <div class="arrow-col">
+          <span class="arrow-btn" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M5 12h14M13 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto" id="manifesto">
+  <div class="shell">
+    <div class="manifesto-grid">
+      <div class="label">§ 03 — Manifesto</div>
+      <div>
+        <blockquote>
+          We build the tools we needed first<span class="strike"> — and couldn't&nbsp;find</span>.<br/>
+          No <em>onboarding calls</em>. No seat counts. No&nbsp;quarterly review.<br/>
+          Just software that <em>shows up Monday</em>.
+        </blockquote>
+        <div class="signoff">
+          <span>— Standard Power Washing &amp; co.</span>
+          <span class="line"></span>
+          <span>EST. 2026 · Indianapolis</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRINCIPLES -->
+<section class="principles">
+  <div class="shell">
+    <div class="principles-head">
+      <div class="marker">§ 04 — How we&nbsp;ship</div>
+      <h3>Three rules. Worth repeating.</h3>
+    </div>
+    <div class="principles-grid">
+      <div class="principle">
+        <div class="num">— 01</div>
+        <h4>One tool, one job</h4>
+        <p>No suites pretending to be platforms. Each app is small enough that one person can hold the whole thing in their head — including the customer.</p>
+      </div>
+      <div class="principle">
+        <div class="num">— 02</div>
+        <h4>The customer owns their data</h4>
+        <p>Plain CSV exports from every screen. No data hostage at end-of-trial. If you leave, you leave with your records.</p>
+      </div>
+      <div class="principle">
+        <div class="num">— 03</div>
+        <h4>Priced like tools, not SaaS</h4>
+        <p>Flat monthly. Unlimited users. No tiered features held back to push you up the ladder. If we add it, you get&nbsp;it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="shell">
+    <div class="contact-grid">
+      <h3>Got a job <em>worth&nbsp;doing</em>?<br/>Bring it in.</h3>
+      <div class="right">
+        <ul>
+          <li><span>General</span><span><a href="mailto:hello@rockstandard.ai">hello@rockstandard.ai</a></span></li>
+          <li><span>Press</span><span><a href="mailto:press@rockstandard.ai">press@rockstandard.ai</a></span></li>
+          <li><span>Built by</span><span>Standard Power Washing LLC · Indianapolis IN</span></li>
+          <li><span>Status</span><span>pzip.ai live · psupp.ai &amp; pquote.ai pre-launch</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="shell row">
+    <div>© 2026 RockStandard</div>
+    <div class="center">— Built in Indiana · Shipped on&nbsp;Mondays —</div>
+    <div class="right">v0.1 · <a href="/api/health">status</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

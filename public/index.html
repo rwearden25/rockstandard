@@ -5,662 +5,498 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>RockStandard — small, sturdy software for the field</title>
 <meta name="description" content="RockStandard ships three small, opinionated tools for field-service operators: pzip.ai dispatch, psupp.ai diagnostics, pquote.ai quoting." />
-<meta name="theme-color" content="#ece7da" />
+<meta name="theme-color" content="#fafaf7" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
 <style>
   :root {
-    --ink:        #16181c;
-    --ink-soft:   #2a2c33;
-    --ink-faint:  #4d4f57;
-    --paper:      #ece7da;
-    --paper-2:    #e1dccb;
-    --paper-3:    #d6cfba;
-    --bone:       #c8c0aa;
-    --rule:       rgba(22, 24, 28, 0.18);
-    --rule-soft:  rgba(22, 24, 28, 0.08);
-    --moss:       #3d5a3a;
-    --moss-2:     #5a7a52;
-    --moss-3:     #7d9a72;
-    --brass:      #8a6b30;
-    --mute:       #6b6857;
+    --bg:        #fafaf7;
+    --surface:   #ffffff;
+    --ink:       #0a0a0a;
+    --ink-2:     #404040;
+    --ink-3:     #595959;
+    --mute:      #8a8a85;
+    --hairline:  #e7e5e0;
+    --hairline-2:#efede8;
+    --accent:    #1e40af;
+    --accent-2:  #1e3a8a;
+    --accent-soft: #eef2ff;
 
-    --display:    "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-    --mono:       "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    --font:      "Outfit", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    --r:         4px;
+    --shell:     1240px;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   html, body { margin: 0; padding: 0; }
 
   body {
-    background: var(--paper);
+    background: var(--bg);
     color: var(--ink);
-    font-family: var(--display);
+    font-family: var(--font);
     font-weight: 400;
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 17px;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
   }
 
-  /* Paper grain — kept very low, warm */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 100;
-    opacity: .045;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  }
-
   a { color: inherit; text-decoration: none; }
-  ::selection { background: var(--moss); color: var(--paper); }
+  ::selection { background: var(--ink); color: var(--bg); }
 
   .shell {
-    max-width: 1340px;
+    max-width: var(--shell);
     margin: 0 auto;
-    padding: 0 clamp(20px, 4vw, 56px);
+    padding: 0 clamp(20px, 4vw, 48px);
   }
 
   /* ──────────────────────────────────────────
-     CORNER TICKS — technical-drawing decoration
+     HEADER
   ────────────────────────────────────────── */
-  .ticked { position: relative; }
-  .ticked::before, .ticked::after,
-  .ticked > .tl, .ticked > .tr, .ticked > .bl, .ticked > .br { display: none; }
-  .ticked .corner {
-    position: absolute;
-    width: 14px; height: 14px;
-    pointer-events: none;
-    color: var(--ink);
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(250, 250, 247, 0.85);
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--hairline);
   }
-  .ticked .corner.tl { top: -1px; left: -1px;
-    border-top: 1.5px solid; border-left: 1.5px solid; }
-  .ticked .corner.tr { top: -1px; right: -1px;
-    border-top: 1.5px solid; border-right: 1.5px solid; }
-  .ticked .corner.bl { bottom: -1px; left: -1px;
-    border-bottom: 1.5px solid; border-left: 1.5px solid; }
-  .ticked .corner.br { bottom: -1px; right: -1px;
-    border-bottom: 1.5px solid; border-right: 1.5px solid; }
-
-  /* ──────────────────────────────────────────
-     TOP / NAV
-  ────────────────────────────────────────── */
-  .top {
+  .top-row {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: 24px;
-    padding: 22px 0;
-    border-bottom: 1px solid var(--rule);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
+    gap: 28px;
+    padding: 18px 0;
   }
-  .top .mark {
+  .mark {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    color: var(--ink);
-    font-weight: 500;
-    font-family: var(--display);
-    text-transform: none;
-    letter-spacing: -.005em;
-    font-size: 16px;
-  }
-  .top .mark .glyph {
-    width: 26px; height: 26px;
-    display: inline-block;
-  }
-  .top .meta { text-align: center; }
-  .top .meta b { color: var(--ink); font-weight: 600; }
-  .top .nav {
-    display: inline-flex;
-    gap: 22px;
-    justify-self: end;
-  }
-  .top .nav a {
-    position: relative;
-    padding-bottom: 4px;
-    border-bottom: 1px solid transparent;
-    transition: border-color .25s, color .25s;
-  }
-  .top .nav a:hover {
-    color: var(--moss);
-    border-bottom-color: var(--moss);
-  }
-
-  /* ──────────────────────────────────────────
-     HERO — specimen page
-  ────────────────────────────────────────── */
-  .hero {
-    position: relative;
-    padding: clamp(48px, 8vw, 110px) 0 clamp(60px, 8vw, 110px);
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .hero-frame {
-    position: relative;
-    padding: clamp(28px, 4vw, 56px) clamp(24px, 4vw, 48px);
-    border: 1px solid var(--rule);
-    background:
-      repeating-linear-gradient(
-        45deg,
-        transparent 0 14px,
-        rgba(22,24,28,0.018) 14px 15px
-      );
-  }
-
-  .hero-meta {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    border-bottom: 1px dashed var(--rule);
-    padding-bottom: 14px;
-    margin-bottom: clamp(28px, 5vw, 60px);
-  }
-  .hero-meta .lt { display: inline-flex; align-items: center; gap: 10px; }
-  .hero-meta .dot {
-    width: 7px; height: 7px;
-    border-radius: 999px;
-    background: var(--moss);
-    box-shadow: 0 0 0 4px rgba(61, 90, 58, .18);
-    animation: pulse 2.6s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 4px rgba(61, 90, 58, .18); }
-    50%      { box-shadow: 0 0 0 9px rgba(61, 90, 58, 0);   }
-  }
-
-  .wordmark {
-    font-family: var(--display);
-    font-weight: 500;
-    font-variation-settings: "wdth" 88, "opsz" 96;
-    font-size: clamp(60px, 13.5vw, 220px);
-    line-height: .86;
-    letter-spacing: -.045em;
-    color: var(--ink);
-    margin: 0;
-  }
-  .wordmark .b { color: var(--ink); }
-  .wordmark .super {
-    font-family: var(--mono);
-    font-weight: 500;
-    font-size: .12em;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--moss);
-    vertical-align: super;
-    margin-left: .15em;
-    line-height: 1;
-  }
-
-  .hero-lede {
-    margin-top: clamp(34px, 5vw, 64px);
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: clamp(20px, 4vw, 60px);
-    align-items: start;
-  }
-  .hero-lede .gloss {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    line-height: 1.7;
-    border-top: 1.5px solid var(--ink);
-    padding-top: 12px;
-  }
-  .hero-lede .gloss .key { color: var(--ink); display: block; margin-top: 4px; }
-  .hero-lede p {
-    margin: 0;
-    font-family: var(--display);
-    font-weight: 380;
-    font-variation-settings: "wdth" 96;
-    font-size: clamp(22px, 2.6vw, 34px);
-    line-height: 1.28;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 17px;
     letter-spacing: -.012em;
     color: var(--ink);
-    max-width: 32ch;
   }
-  .hero-lede p span.acc {
-    color: var(--moss);
-    font-style: italic;
+  .mark .glyph {
+    width: 22px; height: 22px;
+    display: inline-block;
+    color: var(--ink);
+  }
+  nav.main {
+    display: inline-flex;
+    gap: 28px;
+    justify-self: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+  nav.main a { transition: color .2s; }
+  nav.main a:hover { color: var(--ink); }
+
+  .top-cta {
+    justify-self: end;
+    display: inline-flex;
+    gap: 10px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    border: 1px solid var(--hairline);
+    color: var(--ink);
+    background: var(--surface);
+    transition: background .2s, border-color .2s, transform .2s;
+  }
+  .pill:hover { border-color: var(--ink); transform: translateY(-1px); }
+  .pill.solid {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+  .pill.solid:hover { background: var(--accent); border-color: var(--accent); }
+
+  /* ──────────────────────────────────────────
+     HERO
+  ────────────────────────────────────────── */
+  section.hero {
+    padding: clamp(70px, 11vw, 150px) 0 clamp(60px, 9vw, 110px);
+    text-align: center;
+  }
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 14px 7px 12px;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-2);
+    margin-bottom: 28px;
+  }
+  .status-chip .live-dot {
+    position: relative;
+    width: 8px; height: 8px;
+    border-radius: 999px;
+    background: #16a34a;
+  }
+  .status-chip .live-dot::after {
+    content: "";
+    position: absolute; inset: -4px;
+    border-radius: 999px;
+    background: #16a34a;
+    opacity: .25;
+    animation: ping 2s ease-out infinite;
+  }
+  @keyframes ping {
+    0%   { transform: scale(.5); opacity: .35; }
+    80%  { transform: scale(2);  opacity: 0;   }
+    100% { transform: scale(2);  opacity: 0;   }
   }
 
-  .cta-row {
-    margin-top: clamp(36px, 5vw, 56px);
-    display: flex;
+  h1.headline {
+    font-weight: 600;
+    font-size: clamp(48px, 7.6vw, 110px);
+    line-height: 1.02;
+    letter-spacing: -.035em;
+    margin: 0 auto;
+    max-width: 16ch;
+    color: var(--ink);
+  }
+  h1.headline .accent { color: var(--accent); }
+
+  .sub {
+    margin: clamp(22px, 3vw, 32px) auto 0;
+    max-width: 60ch;
+    font-size: clamp(17px, 1.4vw, 20px);
+    line-height: 1.55;
+    color: var(--ink-3);
+    font-weight: 400;
+  }
+
+  .hero-ctas {
+    margin-top: clamp(32px, 4vw, 44px);
+    display: inline-flex;
     flex-wrap: wrap;
     gap: 12px;
-    align-items: center;
+    justify-content: center;
   }
   .btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 13px 20px 13px 22px;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    border: 1.5px solid var(--ink);
-    color: var(--ink);
-    background: transparent;
-    border-radius: 0;
-    transition: background .2s, color .2s, transform .25s, border-color .2s;
+    padding: 14px 22px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+    border: 1px solid var(--ink);
+    color: var(--bg);
+    background: var(--ink);
+    transition: background .2s, color .2s, border-color .2s, transform .2s;
   }
-  .btn:hover { background: var(--ink); color: var(--paper); transform: translateY(-2px); }
-  .btn.solid { background: var(--moss); border-color: var(--moss); color: var(--paper); }
-  .btn.solid:hover { background: var(--ink); border-color: var(--ink); }
-  .btn .arrow { transition: transform .25s; display: inline-block; }
+  .btn:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
+  .btn .arrow { transition: transform .2s; }
   .btn:hover .arrow { transform: translateX(4px); }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { background: var(--ink); color: var(--bg); }
 
   /* ──────────────────────────────────────────
-     INDEX BAR
+     STAT STRIP
   ────────────────────────────────────────── */
-  .index-bar {
+  .stat-strip {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    border-bottom: 1px solid var(--rule);
-    border-top: 1px solid var(--rule);
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    background: var(--surface);
   }
-  .index-bar div {
-    padding: 16px 0;
-    border-right: 1px solid var(--rule);
+  .stat-strip .item {
+    padding: clamp(22px, 3vw, 32px) clamp(16px, 2vw, 24px);
+    border-right: 1px solid var(--hairline);
+    text-align: center;
   }
-  .index-bar div:last-child { border-right: 0; }
-  .index-bar div span { color: var(--ink); }
+  .stat-strip .item:last-child { border-right: 0; }
+  .stat-strip .num {
+    font-size: clamp(28px, 3.4vw, 42px);
+    font-weight: 600;
+    letter-spacing: -.025em;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .stat-strip .label {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
 
   /* ──────────────────────────────────────────
-     SUITE — specimen cards
+     SECTION HEAD (reusable)
   ────────────────────────────────────────── */
-  section.suite {
-    padding: clamp(80px, 10vw, 140px) 0;
+  .sec-head {
+    text-align: center;
+    margin: 0 auto clamp(40px, 5vw, 60px);
+    max-width: 720px;
   }
-  .suite-head {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: end;
-    gap: 40px;
-    margin-bottom: clamp(50px, 7vw, 90px);
-  }
-  .suite-head .eyebrow {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .2em;
+  .sec-head .eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: .04em;
+    margin-bottom: 14px;
     text-transform: uppercase;
-    color: var(--moss);
   }
-  .suite-head h2 {
-    font-family: var(--display);
-    font-weight: 480;
-    font-variation-settings: "wdth" 80, "opsz" 96;
-    font-size: clamp(36px, 5.4vw, 76px);
-    line-height: .96;
-    letter-spacing: -.035em;
-    margin: 14px 0 0;
-    color: var(--ink);
+  .sec-head h2 {
+    font-size: clamp(34px, 4.6vw, 60px);
+    line-height: 1.05;
+    letter-spacing: -.03em;
+    font-weight: 600;
+    margin: 0 0 14px;
   }
-  .suite-head h2 .it {
-    font-style: italic;
-    font-variation-settings: "wdth" 92;
-    color: var(--moss);
-  }
-  .suite-head .blurb {
-    font-family: var(--display);
-    font-weight: 380;
-    font-size: clamp(16px, 1.4vw, 19px);
-    line-height: 1.5;
-    color: var(--ink-soft);
-    max-width: 42ch;
-    justify-self: end;
+  .sec-head p {
+    margin: 0 auto;
+    max-width: 56ch;
+    font-size: clamp(16px, 1.3vw, 18px);
+    color: var(--ink-3);
+    line-height: 1.55;
   }
 
+  /* ──────────────────────────────────────────
+     SUITE
+  ────────────────────────────────────────── */
+  section.suite {
+    padding: clamp(80px, 10vw, 130px) 0;
+  }
   .grid-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: clamp(20px, 2.4vw, 32px);
+    gap: clamp(18px, 2vw, 24px);
   }
-
-  .specimen {
-    position: relative;
+  .card {
     display: flex;
     flex-direction: column;
-    padding: clamp(22px, 2.4vw, 32px);
-    border: 1.5px solid var(--ink);
-    background: var(--paper);
-    transition: transform .35s cubic-bezier(.2,.8,.2,1), background .35s;
-    min-height: 380px;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--r);
+    padding: clamp(24px, 2.6vw, 32px);
+    transition: border-color .25s, transform .25s, box-shadow .25s;
+    color: var(--ink);
+    min-height: 320px;
   }
-  .specimen:hover { transform: translateY(-4px); background: var(--paper-2); }
-  .specimen:hover .name { color: var(--moss); }
-  .specimen:hover .open svg { transform: translate(4px, -4px); }
-
-  .specimen .top-row {
+  .card:hover {
+    border-color: var(--ink);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px -16px rgba(10,10,10,.18);
+  }
+  .card .head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-bottom: clamp(28px, 4vw, 40px);
+    margin-bottom: 28px;
   }
-  .specimen .badge {
+  .card .badge {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 6px;
     padding: 4px 10px;
-    background: var(--ink);
-    color: var(--paper);
-  }
-  .specimen .badge::before {
-    content: "";
-    width: 5px; height: 5px;
     border-radius: 999px;
-    background: var(--moss-3);
-    box-shadow: 0 0 0 2.5px rgba(125, 154, 114, .3);
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--accent-soft);
+    color: var(--accent-2);
+    letter-spacing: .02em;
   }
-
-  .specimen .index {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .18em;
-    color: var(--moss);
+  .card .badge::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 999px;
+    background: var(--accent);
   }
-
-  .specimen .name {
-    font-family: var(--display);
+  .card .domain {
+    font-size: 13px;
     font-weight: 500;
-    font-variation-settings: "wdth" 84, "opsz" 96;
-    font-size: clamp(46px, 5vw, 72px);
-    line-height: .9;
-    letter-spacing: -.04em;
-    color: var(--ink);
+    color: var(--mute);
+  }
+  .card h3 {
+    font-size: clamp(32px, 3.4vw, 44px);
+    font-weight: 600;
+    letter-spacing: -.03em;
+    line-height: 1;
     margin: 0 0 6px;
-    transition: color .25s;
   }
-  .specimen .role {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-bottom: clamp(20px, 2.5vw, 28px);
+  .card .role {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 16px;
+    letter-spacing: -.005em;
   }
-
-  .specimen .desc {
-    font-family: var(--display);
-    font-weight: 380;
-    font-size: 15.5px;
-    line-height: 1.5;
-    color: var(--ink-soft);
+  .card .desc {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink-3);
     margin: 0 0 auto;
   }
-
-  .specimen .specs {
+  .card .specs {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 20px;
+    gap: 6px;
+    margin-top: 22px;
   }
-  .specimen .specs span {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    border: 1px solid var(--rule);
-    padding: 3px 8px;
+  .card .specs span {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-3);
+    background: var(--bg);
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--hairline-2);
   }
-
-  .specimen .footer-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
+  .card .visit {
     margin-top: 22px;
     padding-top: 18px;
-    border-top: 1px dashed var(--rule);
-  }
-  .specimen .domain {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--ink);
-    font-weight: 500;
-  }
-  .specimen .open {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .18em;
-    text-transform: uppercase;
+    border-top: 1px solid var(--hairline);
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    color: var(--moss);
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
   }
-  .specimen .open svg { width: 14px; height: 14px; transition: transform .25s; }
+  .card .visit .arrow { transition: transform .2s; }
+  .card:hover .visit .arrow { transform: translate(4px, -4px); color: var(--accent); }
 
   /* ──────────────────────────────────────────
-     MANIFESTO (inverted block)
+     MANIFESTO
   ────────────────────────────────────────── */
   section.manifesto {
-    background: var(--ink);
-    color: var(--paper);
-    padding: clamp(90px, 12vw, 160px) 0;
-    border-top: 1px solid var(--ink);
-    border-bottom: 1px solid var(--ink);
-    position: relative;
-    overflow: hidden;
+    padding: clamp(80px, 10vw, 130px) 0;
+    background: var(--surface);
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
   }
-  section.manifesto::after {
-    content: "";
-    position: absolute; inset: 0;
-    background:
-      repeating-linear-gradient(to right, transparent 0 80px, rgba(236, 231, 218, .03) 80px 81px),
-      repeating-linear-gradient(to bottom, transparent 0 80px, rgba(236, 231, 218, .03) 80px 81px);
-    pointer-events: none;
+  .quote {
+    max-width: 24ch;
+    margin: 0 auto;
+    text-align: center;
   }
-  .manifesto-inner {
-    position: relative;
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: clamp(20px, 4vw, 60px);
-  }
-  .manifesto-inner .label {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--moss-3);
-    border-top: 1.5px solid var(--moss-3);
-    padding-top: 12px;
-  }
-  .manifesto-inner blockquote {
+  .quote blockquote {
     margin: 0;
-    font-family: var(--display);
-    font-weight: 420;
-    font-variation-settings: "wdth" 92, "opsz" 96;
-    font-size: clamp(28px, 4.2vw, 60px);
+    font-size: clamp(34px, 5vw, 64px);
     line-height: 1.08;
-    letter-spacing: -.025em;
-    color: var(--paper);
+    letter-spacing: -.03em;
+    font-weight: 500;
+    color: var(--ink);
+    max-width: none;
   }
-  .manifesto-inner blockquote .acc {
-    color: var(--moss-3);
-    font-style: italic;
+  .quote blockquote .accent { color: var(--accent); }
+  .quote .signoff {
+    margin-top: 32px;
+    font-size: 14px;
+    color: var(--mute);
+    font-weight: 500;
+    letter-spacing: .02em;
   }
-  .manifesto-inner blockquote .strike {
-    color: var(--ink-faint);
-    text-decoration: line-through;
-    text-decoration-thickness: 2px;
-  }
-  .manifesto-inner .signoff {
-    margin-top: clamp(40px, 5vw, 64px);
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: #b6b09a;
-  }
-  .manifesto-inner .signoff .line { flex: 1; height: 1px; background: rgba(236,231,218,.15); }
 
   /* ──────────────────────────────────────────
      PRINCIPLES
   ────────────────────────────────────────── */
   section.principles {
     padding: clamp(80px, 10vw, 130px) 0;
-    background: var(--paper-2);
   }
-  .principles-head {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: clamp(20px, 4vw, 60px);
-    align-items: start;
-    margin-bottom: clamp(40px, 5vw, 60px);
-  }
-  .principles-head .marker {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .2em;
-    color: var(--moss);
-    text-transform: uppercase;
-    border-top: 1.5px solid var(--ink);
-    padding-top: 12px;
-  }
-  .principles-head h3 {
-    font-family: var(--display);
-    font-weight: 460;
-    font-variation-settings: "wdth" 84, "opsz" 96;
-    font-size: clamp(30px, 3.8vw, 50px);
-    margin: 0;
-    line-height: 1.05;
-    letter-spacing: -.025em;
-  }
-  .principles-head h3 .it { font-style: italic; color: var(--moss); }
-
   .principles-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: clamp(20px, 2.4vw, 32px);
   }
   .principle {
-    position: relative;
-    padding: clamp(22px, 2.4vw, 30px);
-    background: var(--paper);
-    border: 1px solid var(--rule);
+    text-align: left;
   }
   .principle .num {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .18em;
-    color: var(--moss);
+    display: inline-flex;
+    width: 36px; height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 22px;
   }
   .principle h4 {
-    margin: 14px 0 12px;
-    font-family: var(--display);
-    font-weight: 500;
-    font-variation-settings: "wdth" 88;
-    font-size: clamp(22px, 2vw, 28px);
-    line-height: 1.1;
+    font-size: clamp(20px, 1.8vw, 24px);
+    font-weight: 600;
     letter-spacing: -.015em;
+    margin: 0 0 10px;
+    color: var(--ink);
   }
   .principle p {
     margin: 0;
-    font-family: var(--display);
-    font-weight: 380;
-    font-size: 14.5px;
+    font-size: 16px;
     line-height: 1.55;
-    color: var(--ink-soft);
+    color: var(--ink-3);
   }
 
   /* ──────────────────────────────────────────
-     CONTACT
+     CTA BAND
   ────────────────────────────────────────── */
-  section.contact {
-    padding: clamp(80px, 10vw, 140px) 0;
-    background: var(--paper);
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
+  section.cta-band {
+    padding: clamp(70px, 9vw, 110px) 0;
+    background: var(--ink);
+    color: var(--bg);
+    text-align: center;
   }
-  .contact-grid {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: clamp(30px, 5vw, 80px);
-    align-items: end;
-  }
-  .contact-grid h3 {
-    font-family: var(--display);
-    font-weight: 480;
-    font-variation-settings: "wdth" 82, "opsz" 96;
-    font-size: clamp(40px, 6vw, 86px);
-    line-height: .96;
+  section.cta-band h3 {
+    font-size: clamp(34px, 5vw, 60px);
+    line-height: 1.05;
     letter-spacing: -.03em;
-    margin: 0;
+    font-weight: 600;
+    margin: 0 auto 16px;
+    max-width: 18ch;
+  }
+  section.cta-band h3 .accent { color: #93c5fd; }
+  section.cta-band p {
+    max-width: 50ch;
+    margin: 0 auto 32px;
+    font-size: 17px;
+    line-height: 1.55;
+    color: rgba(250, 250, 247, .68);
+  }
+  section.cta-band .btn {
+    background: var(--bg);
+    border-color: var(--bg);
     color: var(--ink);
   }
-  .contact-grid h3 .it { font-style: italic; color: var(--moss); }
-
-  .contact-table {
-    border-top: 1.5px solid var(--ink);
+  section.cta-band .btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
   }
-  .contact-table .row {
-    display: grid;
-    grid-template-columns: 110px 1fr;
-    gap: 14px;
-    padding: 13px 0;
-    border-bottom: 1px solid var(--rule);
-    align-items: baseline;
-  }
-  .contact-table .row .k {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-  }
-  .contact-table .row .v {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--ink);
-  }
-  .contact-table a:hover { color: var(--moss); border-bottom: 1px solid var(--moss); }
 
   /* ──────────────────────────────────────────
      FOOTER
   ────────────────────────────────────────── */
   footer {
-    padding: 28px 0 36px;
-    background: var(--paper);
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
+    padding: 36px 0 40px;
+    background: var(--bg);
+    border-top: 1px solid var(--hairline);
+    font-size: 14px;
+    color: var(--ink-3);
   }
   footer .row {
     display: grid;
@@ -668,9 +504,9 @@
     align-items: center;
     gap: 20px;
   }
-  footer .center { text-align: center; color: var(--ink); }
+  footer .center { text-align: center; }
   footer .right  { text-align: right; }
-  footer a:hover { color: var(--moss); }
+  footer .right a:hover { color: var(--accent); }
 
   /* ──────────────────────────────────────────
      ENTRANCE
@@ -678,14 +514,14 @@
   @media (prefers-reduced-motion: no-preference) {
     .reveal {
       opacity: 0;
-      transform: translateY(16px);
-      animation: reveal 1s cubic-bezier(.2,.8,.2,1) forwards;
+      transform: translateY(12px);
+      animation: reveal .9s cubic-bezier(.2,.8,.2,1) forwards;
     }
-    .reveal.d1 { animation-delay: .05s; }
-    .reveal.d2 { animation-delay: .18s; }
-    .reveal.d3 { animation-delay: .31s; }
-    .reveal.d4 { animation-delay: .44s; }
-    .reveal.d5 { animation-delay: .57s; }
+    .reveal.d1 { animation-delay: .04s; }
+    .reveal.d2 { animation-delay: .14s; }
+    .reveal.d3 { animation-delay: .26s; }
+    .reveal.d4 { animation-delay: .38s; }
+    .reveal.d5 { animation-delay: .50s; }
   }
   @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
 
@@ -694,20 +530,14 @@
   ────────────────────────────────────────── */
   @media (max-width: 980px) {
     .grid-3, .principles-grid { grid-template-columns: 1fr 1fr; }
+    .stat-strip { grid-template-columns: 1fr 1fr; }
+    .stat-strip .item:nth-child(2) { border-right: 0; }
+    .stat-strip .item:nth-child(1), .stat-strip .item:nth-child(2) { border-bottom: 1px solid var(--hairline); }
   }
   @media (max-width: 720px) {
-    .top { grid-template-columns: 1fr auto; }
-    .top .meta { display: none; }
-    .hero-lede { grid-template-columns: 1fr; gap: 16px; }
-    .suite-head { grid-template-columns: 1fr; gap: 16px; }
-    .suite-head .blurb { justify-self: start; }
+    .top-row { grid-template-columns: auto auto; }
+    nav.main { display: none; }
     .grid-3, .principles-grid { grid-template-columns: 1fr; }
-    .index-bar { grid-template-columns: 1fr 1fr; }
-    .index-bar div:nth-child(2) { border-right: 0; }
-    .index-bar div:nth-child(1), .index-bar div:nth-child(2) { border-bottom: 1px solid var(--rule); }
-    .manifesto-inner { grid-template-columns: 1fr; }
-    .principles-head { grid-template-columns: 1fr; gap: 8px; }
-    .contact-grid { grid-template-columns: 1fr; gap: 30px; }
     footer .row { grid-template-columns: 1fr; text-align: left; gap: 8px; }
     footer .center, footer .right { text-align: left; }
   }
@@ -715,163 +545,119 @@
 </head>
 <body>
 
-<div class="shell">
-  <!-- TOP BAR -->
-  <header class="top">
+<!-- HEADER -->
+<header class="top">
+  <div class="shell top-row">
     <a class="mark" href="/">
-      <svg class="glyph" viewBox="0 0 26 26" aria-hidden="true">
-        <rect x="1" y="1" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M6 19 L13 6 L20 19 Z" fill="currentColor" />
-        <line x1="6" y1="19" x2="20" y2="19" stroke="#ece7da" stroke-width="1.5" />
+      <svg class="glyph" viewBox="0 0 22 22" aria-hidden="true">
+        <rect x="1" y="1" width="20" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M5.5 16 L11 6 L16.5 16 Z" fill="currentColor" />
       </svg>
       <span>RockStandard</span>
     </a>
-    <div class="meta">
-      EST. <b>2026</b> &nbsp;·&nbsp; Three tools, shipped from the field
-    </div>
-    <nav class="nav">
+    <nav class="main">
       <a href="#suite">Suite</a>
       <a href="#manifesto">Manifesto</a>
+      <a href="#principles">How we ship</a>
       <a href="#contact">Contact</a>
     </nav>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-frame ticked reveal d1">
-      <span class="corner tl"></span>
-      <span class="corner tr"></span>
-      <span class="corner bl"></span>
-      <span class="corner br"></span>
-
-      <div class="hero-meta">
-        <span class="lt"><span class="dot"></span>VOL. 01 — ISSUE 01 / SPECIMEN PAGE</span>
-        <span>FIG. 00 · BRAND MARK · WIDTH 100%</span>
-      </div>
-
-      <h1 class="wordmark">RockStandard<sup class="super">™</sup></h1>
-
-      <div class="hero-lede">
-        <div class="gloss">
-          GLOSS / 01
-          <span class="key">Field-tested software,</span>
-          <span class="key">built one tool at a time.</span>
-        </div>
-        <p>
-          Three small, opinionated apps for crews who <span class="acc">do the work</span> —
-          dispatch, diagnose, quote — sharing one login and a single bill.
-        </p>
-      </div>
-
-      <div class="cta-row reveal d3">
-        <a class="btn solid" href="#suite">Open the suite <span class="arrow">→</span></a>
-        <a class="btn" href="https://pzip.ai" target="_blank" rel="noopener">Visit pzip.ai <span class="arrow">↗</span></a>
-      </div>
+    <div class="top-cta">
+      <a class="pill solid" href="https://pzip.ai" target="_blank" rel="noopener">
+        Open pzip.ai
+      </a>
     </div>
-  </section>
+  </div>
+</header>
 
-  <!-- INDEX BAR -->
-  <div class="index-bar">
-    <div>03 <span>tools</span></div>
-    <div>01 <span>login</span></div>
-    <div>01 <span>invoice</span></div>
-    <div>00 <span>onboarding calls</span></div>
+<!-- HERO -->
+<section class="hero">
+  <div class="shell">
+    <div class="status-chip reveal d1">
+      <span class="live-dot"></span>
+      All three apps now live
+    </div>
+    <h1 class="headline reveal d2">
+      Small, sturdy software <span class="accent">for the field.</span>
+    </h1>
+    <p class="sub reveal d3">
+      RockStandard ships three opinionated tools — <b>dispatch</b>, <b>diagnostics</b>,
+      and <b>quoting</b> — that share one login and a single bill. Built by an
+      operator, for operators.
+    </p>
+    <div class="hero-ctas reveal d4">
+      <a class="btn" href="#suite">
+        See the suite <span class="arrow">→</span>
+      </a>
+      <a class="btn ghost" href="https://pzip.ai" target="_blank" rel="noopener">
+        Try pzip.ai free
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- STAT STRIP -->
+<div class="shell">
+  <div class="stat-strip">
+    <div class="item"><div class="num">3</div><div class="label">Tools</div></div>
+    <div class="item"><div class="num">1</div><div class="label">Login</div></div>
+    <div class="item"><div class="num">1</div><div class="label">Invoice</div></div>
+    <div class="item"><div class="num">0</div><div class="label">Onboarding calls</div></div>
   </div>
 </div>
 
 <!-- SUITE -->
 <section class="suite" id="suite">
   <div class="shell">
-    <div class="suite-head">
-      <div>
-        <div class="eyebrow">FIG. 01 / THE SUITE</div>
-        <h2>Small tools that <span class="it">earn their keep</span>.</h2>
-      </div>
-      <p class="blurb">
-        Each app does one job for one kind of operator. Use one,
-        use all three — the ledger keeps itself.
-      </p>
+    <div class="sec-head">
+      <span class="eyebrow">The Suite</span>
+      <h2>Three tools that earn their keep.</h2>
+      <p>Each app does one job for one kind of operator. Use one, use all three — the ledger keeps itself.</p>
     </div>
 
     <div class="grid-3">
 
-      <!-- pzip -->
-      <a class="specimen ticked" href="https://pzip.ai" target="_blank" rel="noopener">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
-
-        <div class="top-row">
-          <span class="index">SPEC. 01</span>
+      <a class="card" href="https://pzip.ai" target="_blank" rel="noopener">
+        <div class="head">
           <span class="badge">LIVE</span>
+          <span class="domain">pzip.ai</span>
         </div>
-
-        <h3 class="name">pzip</h3>
+        <h3>pzip</h3>
         <div class="role">Dispatch &amp; CRM</div>
         <p class="desc">Schedule jobs, track customers, close the day. Single-tenant, multi-user, paid by the seat.</p>
         <div class="specs">
-          <span>Field service</span><span>Postgres</span><span>$5.99 / mo</span><span>7-day trial</span>
+          <span>Field service</span><span>Postgres</span><span>$5.99 / mo</span>
         </div>
-        <div class="footer-row">
-          <span class="domain">pzip.ai</span>
-          <span class="open">OPEN
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M7 17 L17 7 M9 7 H17 V15"/>
-            </svg>
-          </span>
-        </div>
+        <div class="visit">Visit pzip.ai <span class="arrow">↗</span></div>
       </a>
 
-      <!-- psupp -->
-      <a class="specimen ticked" href="https://psupp.ai" target="_blank" rel="noopener">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
-
-        <div class="top-row">
-          <span class="index">SPEC. 02</span>
+      <a class="card" href="https://psupp.ai" target="_blank" rel="noopener">
+        <div class="head">
           <span class="badge">LIVE</span>
-        </div>
-
-        <h3 class="name">psupp</h3>
-        <div class="role">Diagnostics desk</div>
-        <p class="desc">An agentic support tool that reads 280+ manufacturer manuals and walks techs through repairs in plain English.</p>
-        <div class="specs">
-          <span>Equipment</span><span>282 docs · tsvector</span><span>Agentic search</span>
-        </div>
-        <div class="footer-row">
           <span class="domain">psupp.ai</span>
-          <span class="open">OPEN
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M7 17 L17 7 M9 7 H17 V15"/>
-            </svg>
-          </span>
         </div>
+        <h3>psupp</h3>
+        <div class="role">Diagnostics desk</div>
+        <p class="desc">Reads 280+ manufacturer manuals and walks techs through repairs in plain English.</p>
+        <div class="specs">
+          <span>Equipment</span><span>282 docs</span><span>Agentic search</span>
+        </div>
+        <div class="visit">Visit psupp.ai <span class="arrow">↗</span></div>
       </a>
 
-      <!-- pquote -->
-      <a class="specimen ticked" href="https://pquote.ai" target="_blank" rel="noopener">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
-
-        <div class="top-row">
-          <span class="index">SPEC. 03</span>
+      <a class="card" href="https://pquote.ai" target="_blank" rel="noopener">
+        <div class="head">
           <span class="badge">LIVE</span>
+          <span class="domain">pquote.ai</span>
         </div>
-
-        <h3 class="name">pquote</h3>
+        <h3>pquote</h3>
         <div class="role">Quoting generator</div>
-        <p class="desc">Turn a site address and a few photos into a numbered, branded estimate — with maps, math, and margin baked in.</p>
+        <p class="desc">Turn a site address and a few photos into a numbered, branded estimate — maps, math, and margin baked in.</p>
         <div class="specs">
           <span>Estimating</span><span>Mapbox</span><span>AI-assisted</span>
         </div>
-        <div class="footer-row">
-          <span class="domain">pquote.ai</span>
-          <span class="open">OPEN
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M7 17 L17 7 M9 7 H17 V15"/>
-            </svg>
-          </span>
-        </div>
+        <div class="visit">Visit pquote.ai <span class="arrow">↗</span></div>
       </a>
+
     </div>
   </div>
 </section>
@@ -879,69 +665,52 @@
 <!-- MANIFESTO -->
 <section class="manifesto" id="manifesto">
   <div class="shell">
-    <div class="manifesto-inner">
-      <div class="label">FIG. 02 / MANIFESTO</div>
-      <div>
-        <blockquote>
-          We build the tools we needed first<span class="strike"> — and couldn't&nbsp;find</span>.<br/>
-          No <span class="acc">onboarding calls</span>. No seat counts. No quarterly review.<br/>
-          Just software that <span class="acc">shows up Monday</span>.
-        </blockquote>
-        <div class="signoff">
-          <span>— RockStandard &amp; co.</span>
-          <span class="line"></span>
-          <span>EST. 2026 · TEXAS</span>
-        </div>
-      </div>
+    <div class="quote">
+      <blockquote>
+        We build the tools we needed first.<br/>
+        No onboarding calls. No seat counts.<br/>
+        Just software that <span class="accent">shows up Monday</span>.
+      </blockquote>
+      <div class="signoff">— RockStandard · Texas · est. 2026</div>
     </div>
   </div>
 </section>
 
 <!-- PRINCIPLES -->
-<section class="principles">
+<section class="principles" id="principles">
   <div class="shell">
-    <div class="principles-head">
-      <div class="marker">FIG. 03 / HOW WE SHIP</div>
-      <h3>Three rules. <span class="it">Worth repeating.</span></h3>
+    <div class="sec-head">
+      <span class="eyebrow">How we ship</span>
+      <h2>Three rules. Worth repeating.</h2>
     </div>
     <div class="principles-grid">
-      <div class="principle ticked">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
-        <div class="num">— 01</div>
+      <div class="principle">
+        <div class="num">01</div>
         <h4>One tool, one job</h4>
         <p>No suites pretending to be platforms. Each app is small enough that one person can hold the whole thing in their head — including the customer.</p>
       </div>
-      <div class="principle ticked">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
-        <div class="num">— 02</div>
+      <div class="principle">
+        <div class="num">02</div>
         <h4>Customer owns the data</h4>
         <p>Plain CSV exports from every screen. No data hostage at end-of-trial. If you leave, you leave with your records.</p>
       </div>
-      <div class="principle ticked">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
-        <div class="num">— 03</div>
+      <div class="principle">
+        <div class="num">03</div>
         <h4>Priced like tools, not SaaS</h4>
-        <p>Flat monthly. Unlimited users. No tiered features held back to push you up the ladder. If we add it, you get&nbsp;it.</p>
+        <p>Flat monthly. Unlimited users. No tiered features held back to push you up the ladder. If we add it, you get it.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CONTACT -->
-<section class="contact" id="contact">
+<!-- CTA BAND -->
+<section class="cta-band" id="contact">
   <div class="shell">
-    <div class="contact-grid">
-      <h3>Got a job <span class="it">worth&nbsp;doing</span>?<br/>Bring it in.</h3>
-      <div class="contact-table">
-        <div class="row"><span class="k">General</span><span class="v"><a href="mailto:hello@rockstandard.ai">hello@rockstandard.ai</a></span></div>
-        <div class="row"><span class="k">Press</span><span class="v"><a href="mailto:press@rockstandard.ai">press@rockstandard.ai</a></span></div>
-        <div class="row"><span class="k">Built by</span><span class="v">RockStandard · Texas</span></div>
-        <div class="row"><span class="k">Status</span><span class="v">pzip.ai · psupp.ai · pquote.ai — all live</span></div>
-      </div>
-    </div>
+    <h3>Got a job <span class="accent">worth doing?</span><br/>Bring it in.</h3>
+    <p>Questions, feedback, or partnership ideas — we read every email.</p>
+    <a class="btn" href="mailto:hello@rockstandard.ai">
+      hello@rockstandard.ai <span class="arrow">→</span>
+    </a>
   </div>
 </section>
 
@@ -949,8 +718,8 @@
 <footer>
   <div class="shell row">
     <div>© 2026 RockStandard</div>
-    <div class="center">— Built in Texas · Shipped on&nbsp;Mondays —</div>
-    <div class="right">v0.2 · <a href="/api/health">status</a></div>
+    <div class="center">Built in Texas · Shipped on Mondays</div>
+    <div class="right">v0.3 · <a href="/api/health">status</a></div>
   </div>
 </footer>
 

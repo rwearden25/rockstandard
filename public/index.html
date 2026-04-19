@@ -118,14 +118,14 @@
   .mark {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 11px;
     font-weight: 600;
-    font-size: 17px;
-    letter-spacing: -.012em;
+    font-size: 18px;
+    letter-spacing: -.015em;
     color: var(--ink);
   }
   .mark .glyph {
-    width: 22px; height: 22px;
+    width: 28px; height: 28px;
     display: inline-block;
     color: var(--ink);
   }
@@ -143,7 +143,12 @@
   .top-cta {
     justify-self: end;
     display: inline-flex;
-    gap: 10px;
+    gap: 8px;
+    align-items: center;
+  }
+  .top-cta .pill {
+    padding: 8px 14px;
+    font-size: 13px;
   }
   .pill {
     display: inline-flex;
@@ -265,6 +270,51 @@
     z-index: 2;
   }
   section.hero > .shell { position: relative; z-index: 1; }
+  /* Featured hero mark — large brand glyph */
+  .brand-feature {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(96px, 12vw, 128px);
+    height: clamp(96px, 12vw, 128px);
+    border-radius: 26px;
+    background:
+      linear-gradient(180deg, #1a1d24 0%, #0a0a0a 100%);
+    color: var(--bg);
+    margin: 0 auto 28px;
+    position: relative;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.10) inset,
+      0 8px 20px -6px rgba(10, 10, 10, 0.30),
+      0 24px 60px -16px rgba(30, 64, 175, 0.40);
+    transform: rotate(-3deg);
+    transition: transform .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .brand-feature::before {
+    content: "";
+    position: absolute;
+    inset: -18px;
+    border-radius: 38px;
+    background: radial-gradient(circle, rgba(30, 64, 175, 0.22), transparent 70%);
+    z-index: -1;
+    filter: blur(20px);
+  }
+  .brand-feature::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 26px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent 50%);
+    pointer-events: none;
+  }
+  .brand-feature:hover { transform: rotate(0deg) scale(1.02); }
+  .brand-feature svg {
+    width: 58%;
+    height: 58%;
+    color: var(--bg);
+  }
+  .brand-feature svg .accent { stroke: #93c5fd; }
+
   .status-chip {
     display: inline-flex;
     align-items: center;
@@ -277,6 +327,7 @@
     font-weight: 500;
     color: var(--ink-2);
     margin-bottom: 28px;
+    box-shadow: 0 2px 8px -2px rgba(10,10,10,0.06);
   }
   .status-chip .live-dot {
     position: relative;
@@ -318,13 +369,35 @@
     font-weight: 400;
   }
 
-  .hero-ctas {
+  .hero-ctas,
+  .hero-launcher {
     margin-top: clamp(32px, 4vw, 44px);
     display: inline-flex;
     flex-wrap: wrap;
     gap: 12px;
     justify-content: center;
   }
+  .hero-secondary {
+    margin-top: 22px;
+    text-align: center;
+  }
+  .hero-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-3);
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: color .25s, border-color .25s;
+  }
+  .hero-link:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .hero-link .arrow { transition: transform .25s; }
+  .hero-link:hover .arrow { transform: translateX(3px); }
   .btn {
     display: inline-flex;
     align-items: center;
@@ -776,6 +849,10 @@
     .stat-strip .item:nth-child(2) { border-right: 0; }
     .stat-strip .item:nth-child(1),
     .stat-strip .item:nth-child(2) { border-bottom: 1px solid var(--hairline); }
+
+    /* Free up space for the 3 launcher pills on tablets */
+    nav.main { display: none; }
+    .top-row { grid-template-columns: 1fr auto; }
   }
 
   /* Phones */
@@ -784,12 +861,17 @@
 
     .shell { padding: 0 18px; }
 
-    /* Header — compact, ensure CTA fits */
-    .top-row { grid-template-columns: 1fr auto; gap: 12px; padding: 14px 0; }
+    /* Header — compact, brand only on mobile (3 pills hide) */
+    .top-row { grid-template-columns: 1fr; gap: 12px; padding: 14px 0; }
     nav.main { display: none; }
-    .mark { font-size: 16px; gap: 9px; }
-    .mark .glyph { width: 20px; height: 20px; }
+    .top-cta { display: none; }
+    .mark { font-size: 17px; gap: 10px; justify-self: start; }
+    .mark .glyph { width: 26px; height: 26px; }
     .pill { padding: 10px 14px; font-size: 13.5px; }
+
+    /* Featured brand mark — slightly smaller on phones */
+    .brand-feature { width: 84px; height: 84px; border-radius: 22px; margin-bottom: 22px; }
+    .brand-feature::before { inset: -14px; border-radius: 32px; }
 
     /* Hero — tighter vertical spacing, comfortable headline */
     section.hero { padding: 56px 0 44px; }
@@ -805,8 +887,10 @@
       line-height: 1.55;
       padding: 0 4px;
     }
-    .hero-ctas { margin-top: 26px; gap: 10px; width: 100%; }
-    .hero-ctas .btn { flex: 1 1 auto; justify-content: center; min-width: 0; }
+    .hero-ctas,
+    .hero-launcher { margin-top: 26px; gap: 10px; width: 100%; }
+    .hero-ctas .btn,
+    .hero-launcher .btn { flex: 1 1 calc(33% - 10px); justify-content: center; min-width: 0; }
     .btn { padding: 15px 22px; font-size: 15px; min-height: 48px; }
 
     /* Stat strip — keep 2x2 but tighten */
@@ -876,10 +960,13 @@
     .shell { padding: 0 16px; }
     h1.headline { font-size: 34px; }
     .card h3 { font-size: 28px; }
-    .hero-ctas { flex-direction: column; align-items: stretch; }
-    .hero-ctas .btn { width: 100%; }
+    .hero-ctas,
+    .hero-launcher { flex-direction: column; align-items: stretch; }
+    .hero-ctas .btn,
+    .hero-launcher .btn { width: 100%; flex: 1 1 auto; }
     .pill { padding: 10px 12px; font-size: 13px; }
     section.cta-band .btn { font-size: 14px; padding: 14px 18px; }
+    .brand-feature { width: 76px; height: 76px; border-radius: 20px; }
   }
 
   /* Hover-capable devices only — prevent sticky-hover on touch */
@@ -912,9 +999,9 @@
       <a href="#contact">Contact</a>
     </nav>
     <div class="top-cta">
-      <a class="pill solid" href="https://pzip.ai" target="_blank" rel="noopener">
-        Open pzip.ai
-      </a>
+      <a class="pill solid" href="https://pzip.ai" target="_blank" rel="noopener">pzip.ai</a>
+      <a class="pill solid" href="https://psupp.ai" target="_blank" rel="noopener">psupp.ai</a>
+      <a class="pill solid" href="https://pquote.ai" target="_blank" rel="noopener">pquote.ai</a>
     </div>
   </div>
 </header>
@@ -928,25 +1015,33 @@
     <div class="orb c"></div>
   </div>
   <div class="shell">
-    <div class="status-chip reveal d1">
+    <a class="brand-feature reveal d1" href="#suite" aria-label="RockStandard">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="6" fill="none"/>
+        <path d="M5.5 24.5 L16 6.5 L26.5 24.5 Z" fill="currentColor"/>
+        <path class="accent" d="M13 19 L16 14 L19 19" fill="none" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+    </a>
+
+    <div class="status-chip reveal d2">
       <span class="live-dot"></span>
       All three apps now live
     </div>
-    <h1 class="headline reveal d2">
+    <h1 class="headline reveal d3">
       Small, sturdy software <span class="accent">for the field.</span>
     </h1>
-    <p class="sub reveal d3">
+    <p class="sub reveal d4">
       RockStandard ships three opinionated tools — <b>dispatch</b>, <b>diagnostics</b>,
       and <b>quoting</b> — that share one login and a single bill. Built by an
       operator, for operators.
     </p>
-    <div class="hero-ctas reveal d4">
-      <a class="btn" href="#suite">
-        See the suite <span class="arrow">→</span>
-      </a>
-      <a class="btn ghost" href="https://pzip.ai" target="_blank" rel="noopener">
-        Try pzip.ai free
-      </a>
+    <div class="hero-launcher reveal d5">
+      <a class="btn" href="https://pzip.ai" target="_blank" rel="noopener">pzip.ai <span class="arrow">↗</span></a>
+      <a class="btn" href="https://psupp.ai" target="_blank" rel="noopener">psupp.ai <span class="arrow">↗</span></a>
+      <a class="btn" href="https://pquote.ai" target="_blank" rel="noopener">pquote.ai <span class="arrow">↗</span></a>
+    </div>
+    <div class="hero-secondary reveal d5">
+      <a class="hero-link" href="#suite">See what each tool does <span class="arrow">→</span></a>
     </div>
   </div>
 </section>

@@ -143,12 +143,7 @@
   .top-cta {
     justify-self: end;
     display: inline-flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .top-cta .pill {
-    padding: 8px 14px;
-    font-size: 13px;
+    gap: 10px;
   }
   .pill {
     display: inline-flex;
@@ -369,35 +364,13 @@
     font-weight: 400;
   }
 
-  .hero-ctas,
-  .hero-launcher {
+  .hero-ctas {
     margin-top: clamp(32px, 4vw, 44px);
     display: inline-flex;
     flex-wrap: wrap;
     gap: 12px;
     justify-content: center;
   }
-  .hero-secondary {
-    margin-top: 22px;
-    text-align: center;
-  }
-  .hero-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--ink-3);
-    border-bottom: 1px solid transparent;
-    padding-bottom: 2px;
-    transition: color .25s, border-color .25s;
-  }
-  .hero-link:hover {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-  .hero-link .arrow { transition: transform .25s; }
-  .hero-link:hover .arrow { transform: translateX(3px); }
   .btn {
     display: inline-flex;
     align-items: center;
@@ -849,10 +822,6 @@
     .stat-strip .item:nth-child(2) { border-right: 0; }
     .stat-strip .item:nth-child(1),
     .stat-strip .item:nth-child(2) { border-bottom: 1px solid var(--hairline); }
-
-    /* Free up space for the 3 launcher pills on tablets */
-    nav.main { display: none; }
-    .top-row { grid-template-columns: 1fr auto; }
   }
 
   /* Phones */
@@ -861,12 +830,11 @@
 
     .shell { padding: 0 18px; }
 
-    /* Header — compact, brand only on mobile (3 pills hide) */
-    .top-row { grid-template-columns: 1fr; gap: 12px; padding: 14px 0; }
+    /* Header — compact */
+    .top-row { grid-template-columns: 1fr auto; gap: 12px; padding: 14px 0; }
     nav.main { display: none; }
-    .top-cta { display: none; }
-    .mark { font-size: 17px; gap: 10px; justify-self: start; }
-    .mark .glyph { width: 26px; height: 26px; }
+    .mark { font-size: 16px; gap: 9px; }
+    .mark .glyph { width: 24px; height: 24px; }
     .pill { padding: 10px 14px; font-size: 13.5px; }
 
     /* Featured brand mark — slightly smaller on phones */
@@ -887,10 +855,8 @@
       line-height: 1.55;
       padding: 0 4px;
     }
-    .hero-ctas,
-    .hero-launcher { margin-top: 26px; gap: 10px; width: 100%; }
-    .hero-ctas .btn,
-    .hero-launcher .btn { flex: 1 1 calc(33% - 10px); justify-content: center; min-width: 0; }
+    .hero-ctas { margin-top: 26px; gap: 10px; width: 100%; }
+    .hero-ctas .btn { flex: 1 1 auto; justify-content: center; min-width: 0; }
     .btn { padding: 15px 22px; font-size: 15px; min-height: 48px; }
 
     /* Stat strip — keep 2x2 but tighten */
@@ -960,10 +926,8 @@
     .shell { padding: 0 16px; }
     h1.headline { font-size: 34px; }
     .card h3 { font-size: 28px; }
-    .hero-ctas,
-    .hero-launcher { flex-direction: column; align-items: stretch; }
-    .hero-ctas .btn,
-    .hero-launcher .btn { width: 100%; flex: 1 1 auto; }
+    .hero-ctas { flex-direction: column; align-items: stretch; }
+    .hero-ctas .btn { width: 100%; }
     .pill { padding: 10px 12px; font-size: 13px; }
     section.cta-band .btn { font-size: 14px; padding: 14px 18px; }
     .brand-feature { width: 76px; height: 76px; border-radius: 20px; }
@@ -999,9 +963,9 @@
       <a href="#contact">Contact</a>
     </nav>
     <div class="top-cta">
-      <a class="pill solid" href="https://pzip.ai" target="_blank" rel="noopener">pzip.ai</a>
-      <a class="pill solid" href="https://psupp.ai" target="_blank" rel="noopener">psupp.ai</a>
-      <a class="pill solid" href="https://pquote.ai" target="_blank" rel="noopener">pquote.ai</a>
+      <a class="pill solid" href="https://pzip.ai" target="_blank" rel="noopener">
+        Open pzip.ai
+      </a>
     </div>
   </div>
 </header>
@@ -1035,13 +999,13 @@
       and <b>quoting</b> — that share one login and a single bill. Built by an
       operator, for operators.
     </p>
-    <div class="hero-launcher reveal d5">
-      <a class="btn" href="https://pzip.ai" target="_blank" rel="noopener">pzip.ai <span class="arrow">↗</span></a>
-      <a class="btn" href="https://psupp.ai" target="_blank" rel="noopener">psupp.ai <span class="arrow">↗</span></a>
-      <a class="btn" href="https://pquote.ai" target="_blank" rel="noopener">pquote.ai <span class="arrow">↗</span></a>
-    </div>
-    <div class="hero-secondary reveal d5">
-      <a class="hero-link" href="#suite">See what each tool does <span class="arrow">→</span></a>
+    <div class="hero-ctas reveal d5">
+      <a class="btn" href="#suite">
+        See the suite <span class="arrow">→</span>
+      </a>
+      <a class="btn ghost" href="https://pzip.ai" target="_blank" rel="noopener">
+        Try pzip.ai free
+      </a>
     </div>
   </div>
 </section>

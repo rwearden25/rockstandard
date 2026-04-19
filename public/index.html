@@ -1596,7 +1596,9 @@
       wrap.innerHTML = '';
       if (src && /\.html?(\?|$)/i.test(src)) {
         const f = document.createElement('iframe');
-        f.src = src + (src.includes('?') ? '&' : '?') + 'autoplay=1';
+        const sep = src.includes('?') ? '&' : '?';
+        // cache-bust on every open so palette/content updates show immediately
+        f.src = src + sep + 'autoplay=1&v=' + Date.now();
         f.title = name + ' tour';
         f.setAttribute('allow', 'autoplay');
         f.style.width = '100%';

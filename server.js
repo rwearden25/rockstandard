@@ -10,7 +10,16 @@ const PUBLIC_DIR = path.join(__dirname, 'public');
 const app = express();
 
 app.disable('x-powered-by');
-app.use(express.static(PUBLIC_DIR, { extensions: ['html'], maxAge: '1h' }));
+
+// Force-no-cache for /tours so iterations on tour HTML/CSS show up immediately
+app.use('/tours', (_req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
+});
+
+app.use(express.static(PUBLIC_DIR, { extensions: ['html'], maxAge: '0' }));
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, app: 'rockstandard-site', ts: new Date().toISOString() });

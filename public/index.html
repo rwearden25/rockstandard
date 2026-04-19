@@ -352,7 +352,11 @@
     margin: 0 auto;
     max-width: 16ch;
     color: var(--ink);
+    min-height: calc(1.02em * 3);
+    transition: opacity .55s cubic-bezier(.2,.8,.2,1);
+    will-change: opacity;
   }
+  h1.headline.swap { opacity: 0; }
   h1.headline .accent { color: var(--accent); }
 
   .sub {
@@ -1336,8 +1340,8 @@
       <span class="live-dot"></span>
       All three apps now live
     </div>
-    <h1 class="headline reveal d3">
-      Hard-working, sturdy software <span class="accent">for the field.</span>
+    <h1 class="headline reveal d3" id="rotating-headline">
+      Hard-working software for <span class="accent">hard-working crews.</span>
     </h1>
     <p class="sub reveal d4">
       RockStandard ships three opinionated tools — <b>dispatch</b>, <b>diagnostics</b>,
@@ -1584,6 +1588,67 @@
 </section>
 
 <script>
+  // Rotating hero headline — 10 phrases, fade transition, pause on hover
+  (function () {
+    const el = document.getElementById('rotating-headline');
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const phrases = [
+      // Hard-working / blue-collar
+      'Hard-working software for <span class="accent">hard-working crews.</span>',
+      'Software that <span class="accent">clocks in at 7.</span>',
+      // Sturdy / dependable
+      'Dependable software <span class="accent">for the field.</span>',
+      'Built like a tool, <span class="accent">priced like one too.</span>',
+      // Operator voice
+      'Built by operators. <span class="accent">Used by operators.</span>',
+      'Software that <span class="accent">shows up Monday.</span>',
+      // Punchy / two-clause
+      'Built tough. <span class="accent">Priced fair.</span>',
+      'Plain tools. <span class="accent">Honest pricing.</span>',
+      // Field / craft
+      'Tools for the trade. <span class="accent">Built by people in it.</span>',
+      'Software that <span class="accent">works the way you do.</span>'
+    ];
+
+    const HOLD = 5000;  // ms each phrase visible
+    const FADE = 550;   // ms fade in/out (matches CSS transition)
+    let i = 0;
+    let paused = false;
+    let timer = null;
+
+    const tick = () => {
+      if (paused) return;
+      el.classList.add('swap'); // fade out
+      setTimeout(() => {
+        i = (i + 1) % phrases.length;
+        el.innerHTML = phrases[i];
+        el.classList.remove('swap'); // fade in
+      }, FADE);
+    };
+
+    const start = () => {
+      if (timer) return;
+      timer = setInterval(tick, HOLD + FADE);
+    };
+    const stop = () => {
+      if (!timer) return;
+      clearInterval(timer);
+      timer = null;
+    };
+
+    // Pause on hover (desktop) and on document hidden
+    el.addEventListener('mouseenter', () => { paused = true; });
+    el.addEventListener('mouseleave', () => { paused = false; });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop(); else start();
+    });
+
+    // Start after the reveal animation has settled
+    setTimeout(start, 1500);
+  })();
+
   // Spotlight cursor on cards — sets --mx / --my CSS vars from pointer
   (function () {
     if (window.matchMedia('(hover: none)').matches) return;

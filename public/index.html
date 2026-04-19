@@ -1322,6 +1322,7 @@
       font-size: clamp(38px, 11vw, 56px);
       letter-spacing: -.03em;
       line-height: 1.04;
+      min-height: calc(1.04em * 4);
     }
     .sub {
       margin-top: 18px;
@@ -1376,8 +1377,46 @@
 
     /* Bundle cards — stack on phones */
     .bundles { grid-template-columns: 1fr; gap: 14px; }
-    .bundle-card { padding: 22px; }
-    .bundle-cta { align-self: stretch; text-align: center; }
+    .bundle-card { padding: 22px; gap: 8px; }
+    .bundle-name { font-size: 22px; }
+    .bundle-sub { font-size: 13.5px; }
+    .bundle-price { font-size: 30px; }
+    .bundle-price-row { flex-wrap: wrap; gap: 8px 12px; }
+    .bundle-strike { font-size: 14px; }
+    .bundle-save { font-size: 13px; }
+    .bundle-cta { align-self: stretch; text-align: center; min-height: 48px; padding: 13px 18px; }
+
+    /* Lightbox — fill more of the viewport on phones */
+    .lightbox { padding: 14px; }
+    .lightbox .close {
+      top: 12px;
+      right: 12px;
+      width: 40px;
+      height: 40px;
+    }
+    .lightbox .frame { width: 100%; }
+    .lightbox .caption {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+    .lightbox .placeholder { padding: 28px 20px; gap: 14px; }
+    .lightbox .placeholder p { font-size: 14.5px; }
+
+    /* Features — tighter footer when stacked */
+    .feat-foot {
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      padding-top: 16px;
+      margin-top: 18px;
+    }
+    .feat-foot .price { font-size: 14.5px; }
+    .feat-foot .price small { font-size: 11px; }
+
+    /* Sticky header — slightly thinner on phones, blur intact */
+    header.top { box-shadow: 0 1px 0 rgba(10,10,10,0.05); }
 
     /* CTA band */
     section.cta-band h3 { font-size: clamp(28px, 8vw, 40px); }
@@ -1400,23 +1439,42 @@
   /* Small phones (≤ 380px) */
   @media (max-width: 380px) {
     .shell { padding: 0 16px; }
-    h1.headline { font-size: 34px; }
+    h1.headline { font-size: 34px; min-height: calc(1.04em * 4); }
     .card h3 { font-size: 28px; }
     .hero-ctas { flex-direction: column; align-items: stretch; }
     .hero-ctas .btn { width: 100%; }
     .pill { padding: 10px 12px; font-size: 13px; }
     section.cta-band .btn { font-size: 14px; padding: 14px 18px; }
     .brand-feature { width: 76px; height: 76px; border-radius: 20px; }
+    .bundle-name { font-size: 20px; }
+    .bundle-price { font-size: 26px; }
+    .feat-head h3 { font-size: 26px; }
+    .feat-list li { font-size: 14px; }
+    .sec-head h2 { font-size: clamp(26px, 9vw, 36px); }
+    .stat-strip .num { font-size: 28px; }
+    .stat-strip .label { font-size: 11.5px; }
+    .lightbox .placeholder h4 { font-size: 22px; }
   }
 
   /* Hover-capable devices only — prevent sticky-hover on touch */
   @media (hover: none) {
-    .card:hover {
+    .card:hover,
+    .feat-col:hover,
+    .bundle-card:hover,
+    .tour-tile:hover {
       transform: none;
-      box-shadow: none;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.7) inset,
+        0 1px 2px rgba(10, 10, 10, 0.025),
+        0 6px 14px -8px rgba(10, 10, 10, 0.06);
       border-color: var(--hairline);
     }
-    .btn:hover, .pill:hover { transform: none; }
+    .btn:hover, .pill:hover, .bundle-cta:hover { transform: none; }
+    /* Allow active-press feedback on touch */
+    .card:active,
+    .feat-col:active,
+    .bundle-card:active,
+    .tour-tile:active { border-color: rgba(10, 10, 10, 0.4); }
   }
 </style>
 </head>

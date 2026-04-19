@@ -30,7 +30,8 @@
 
     --font:      "Outfit", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 
-    --r:         4px;
+    --r:         16px;
+    --r-sm:      10px;
     --shell:     1240px;
   }
 
@@ -862,7 +863,7 @@
     position: relative;
     aspect-ratio: 16 / 9;
     background: #000;
-    border-radius: 8px;
+    border-radius: var(--r);
     overflow: hidden;
     box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6);
   }
@@ -1043,84 +1044,132 @@
   }
   .feat-foot a:hover { color: var(--accent-2); }
 
-  /* Bundle strip — sits below the 3 columns */
-  .bundle {
+  /* Bundle cards — two-tier ladder below the 3 feature columns */
+  .bundles {
     margin-top: clamp(28px, 3vw, 40px);
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(16px, 2vw, 24px);
+  }
+  .bundle-card {
+    position: relative;
     display: flex;
-    align-items: center;
-    gap: clamp(14px, 2vw, 24px);
-    padding: clamp(18px, 2vw, 24px) clamp(20px, 2.4vw, 28px);
+    flex-direction: column;
+    gap: 10px;
+    padding: clamp(22px, 2.4vw, 28px) clamp(22px, 2.4vw, 30px);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%),
+      var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--r);
+    transition: border-color .25s, transform .25s, box-shadow .25s;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 1px 2px rgba(10, 10, 10, 0.025),
+      0 6px 14px -8px rgba(10, 10, 10, 0.06);
+  }
+  .bundle-card.featured {
     background:
       linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%),
       var(--accent-soft);
-    border: 1px solid rgba(30, 64, 175, 0.22);
-    border-radius: var(--r);
+    border-color: rgba(30, 64, 175, 0.30);
+    border-width: 1.5px;
     box-shadow:
       0 1px 0 rgba(255, 255, 255, 0.7) inset,
-      0 6px 14px -8px rgba(30, 64, 175, 0.12);
+      0 4px 10px -4px rgba(30, 64, 175, 0.16),
+      0 16px 32px -10px rgba(30, 64, 175, 0.18);
+  }
+  .bundle-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(10, 10, 10, 0.4);
+  }
+  .bundle-card.featured:hover {
+    border-color: var(--accent);
   }
   .bundle-tag {
-    flex-shrink: 0;
+    align-self: flex-start;
     padding: 4px 10px;
     border-radius: 999px;
-    background: var(--accent);
+    background: var(--ink);
     color: var(--bg);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: .08em;
     text-transform: uppercase;
   }
-  .bundle-body {
+  .bundle-tag.accent { background: var(--accent); }
+  .bundle-name {
+    font-size: clamp(22px, 2.4vw, 30px);
+    font-weight: 600;
+    letter-spacing: -.025em;
+    line-height: 1.05;
+    color: var(--ink);
+  }
+  .bundle-sub {
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+  .bundle-price-row {
     display: flex;
     align-items: baseline;
-    flex-wrap: wrap;
-    gap: 10px 14px;
-    flex: 1;
-    font-size: 16px;
-    color: var(--ink);
-  }
-  .bundle-body strong {
-    font-weight: 600;
-    color: var(--ink);
-    font-size: 18px;
-    letter-spacing: -.01em;
-  }
-  .bundle-arrow {
-    color: var(--accent);
-    font-weight: 600;
+    gap: 12px;
+    margin-top: 6px;
   }
   .bundle-price {
-    font-size: 22px;
+    font-size: clamp(28px, 3vw, 40px);
     font-weight: 700;
-    letter-spacing: -.02em;
-    color: var(--accent-2);
+    letter-spacing: -.025em;
+    color: var(--ink);
+    line-height: 1;
   }
+  .bundle-card.featured .bundle-price { color: var(--accent-2); }
   .bundle-price small {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--mute);
-    margin-left: 1px;
+    margin-left: 2px;
+    letter-spacing: 0;
+  }
+  .bundle-strike {
+    font-size: 15px;
+    color: var(--mute);
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+    font-weight: 500;
   }
   .bundle-save {
     font-size: 13px;
-    font-weight: 500;
-    color: var(--ink-3);
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -.005em;
   }
   .bundle-cta {
-    flex-shrink: 0;
-    padding: 10px 18px;
+    align-self: flex-start;
+    margin-top: 12px;
+    padding: 11px 20px;
     border-radius: 999px;
-    background: var(--accent);
-    color: var(--bg);
-    font-size: 13px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 13.5px;
     font-weight: 600;
-    transition: background .2s, transform .2s, box-shadow .2s;
-    box-shadow: 0 4px 10px -2px rgba(30, 64, 175, 0.30);
+    border: 1px solid var(--ink);
+    transition: background .2s, color .2s, transform .2s, box-shadow .2s;
   }
   .bundle-cta:hover {
-    background: var(--accent-2);
+    background: var(--ink);
+    color: var(--bg);
     transform: translateY(-1px);
-    box-shadow: 0 6px 14px -2px rgba(30, 64, 175, 0.40);
+  }
+  .bundle-cta.solid {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px -2px rgba(30, 64, 175, 0.30);
+  }
+  .bundle-cta.solid:hover {
+    background: var(--accent-2);
+    border-color: var(--accent-2);
+    box-shadow: 0 6px 16px -2px rgba(30, 64, 175, 0.40);
   }
 
   /* ──────────────────────────────────────────
@@ -1325,14 +1374,10 @@
     .feat-list li { font-size: 14.5px; }
     .feat-head h3 { font-size: 28px; }
 
-    /* Bundle strip — stack vertically on phones */
-    .bundle {
-      flex-direction: column;
-      align-items: flex-start;
-      text-align: left;
-      gap: 14px;
-    }
-    .bundle-cta { width: 100%; text-align: center; padding: 12px 18px; }
+    /* Bundle cards — stack on phones */
+    .bundles { grid-template-columns: 1fr; gap: 14px; }
+    .bundle-card { padding: 22px; }
+    .bundle-cta { align-self: stretch; text-align: center; }
 
     /* CTA band */
     section.cta-band h3 { font-size: clamp(28px, 8vw, 40px); }
@@ -1644,7 +1689,7 @@
           <li><svg class="ck" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Google sign-in, no demo required</li>
         </ul>
         <div class="feat-foot">
-          <span class="price">$5.99 / mo<small> · unlimited users · 7-day free trial</small></span>
+          <span class="price">$9.99 / mo<small> · unlimited users · 7-day free trial</small></span>
           <a href="https://pzip.ai" target="_blank" rel="noopener">pzip.ai ↗</a>
         </div>
       </div>
@@ -1666,7 +1711,7 @@
           <li><svg class="ck" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Multi-language interface</li>
         </ul>
         <div class="feat-foot">
-          <span class="price">$5.99 / mo<small> · 5 free queries / day · no card</small></span>
+          <span class="price">$9.99 / mo<small> · 5 free queries / day · no card</small></span>
           <a href="https://psupp.ai" target="_blank" rel="noopener">psupp.ai ↗</a>
         </div>
       </div>
@@ -1688,23 +1733,40 @@
           <li><svg class="ck" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Google sign-in, multi-user from day one</li>
         </ul>
         <div class="feat-foot">
-          <span class="price">Free<small> · early-access beta</small></span>
+          <span class="price">$9.99 / mo<small> · 7-day free trial · no card</small></span>
           <a href="https://pquote.ai" target="_blank" rel="noopener">pquote.ai ↗</a>
         </div>
       </div>
 
     </div>
 
-    <!-- Bundle strip -->
-    <div class="bundle">
-      <div class="bundle-tag">Bundle</div>
-      <div class="bundle-body">
-        <strong>pzip + psupp</strong>
-        <span class="bundle-arrow">→</span>
-        <span class="bundle-price">$10.99<small>/mo</small></span>
-        <span class="bundle-save">save $0.99 vs. buying separately</span>
+    <!-- Bundle cards -->
+    <div class="bundles">
+
+      <div class="bundle-card">
+        <div class="bundle-tag">Bundle</div>
+        <div class="bundle-name">pzip + psupp</div>
+        <div class="bundle-sub">Dispatch &amp; CRM + diagnostics desk</div>
+        <div class="bundle-price-row">
+          <span class="bundle-price">$14.99<small>/mo</small></span>
+          <span class="bundle-strike">$19.98</span>
+        </div>
+        <div class="bundle-save">Save $4.99 / mo · 25% off</div>
+        <a class="bundle-cta" href="https://pzip.ai" target="_blank" rel="noopener">Get the bundle ↗</a>
       </div>
-      <a class="bundle-cta" href="https://pzip.ai" target="_blank" rel="noopener">Get the bundle ↗</a>
+
+      <div class="bundle-card featured">
+        <div class="bundle-tag accent">Best Value</div>
+        <div class="bundle-name">All three apps</div>
+        <div class="bundle-sub">pzip + psupp + pquote · the full suite</div>
+        <div class="bundle-price-row">
+          <span class="bundle-price">$19.99<small>/mo</small></span>
+          <span class="bundle-strike">$29.97</span>
+        </div>
+        <div class="bundle-save">Save $9.99 / mo · third app free</div>
+        <a class="bundle-cta solid" href="https://pzip.ai" target="_blank" rel="noopener">Get the suite ↗</a>
+      </div>
+
     </div>
 
   </div>

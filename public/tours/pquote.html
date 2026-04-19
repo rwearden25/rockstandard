@@ -6,9 +6,80 @@
 <title>pquote — tour</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/tours/_tour.css?v=3" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Nunito:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/tours/_tour.css?v=4" />
 <style>
+  /* Override shared palette with pquote's actual Outdoor Pro / Warm Sage theme */
+  :root {
+    --bg:        #F2F0EB;
+    --bg2:       #E4E2DA;
+    --surface:   #FFFFFF;
+    --dark:      #2A2824;
+    --ink:       #2A2824;
+    --ink-2:     #4E4C46;
+    --ink-3:     #4E4C46;
+    --mute:      #A8A49A;
+    --hairline:  #A8A49A;
+    --accent:    #3A5E30;
+    --accent-2:  #2E4E24;
+    --accent-3:  #B8D4A8;
+    --accent-soft: #E0EDDA;
+    --good:      #2A5020;
+    --font:      'Nunito', system-ui, sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  /* Stage — warm wash */
+  .stage {
+    background:
+      radial-gradient(ellipse 65% 50% at 50% 35%, rgba(58, 94, 48, 0.07), transparent 60%),
+      var(--bg);
+  }
+
+  .brand-corner { color: var(--ink); }
+  .brand-corner .sep { color: var(--mute); }
+  .caption { background: rgba(42, 40, 36, 0.88); }
+
+  .progress > span {
+    background: linear-gradient(to right, var(--accent), var(--accent-3));
+  }
+
+  .mock-window {
+    border-color: var(--hairline);
+    box-shadow: 0 16px 40px -12px rgba(42, 40, 36, 0.18), 0 1px 0 rgba(255,255,255,0.7) inset;
+  }
+  .mock-window .topbar {
+    background: linear-gradient(180deg, #F8F6F0 0%, #E4E2DA 100%);
+    border-bottom-color: var(--hairline);
+  }
+  .mock-window .url { color: var(--mute); font-family: var(--font-mono); font-size: 10.5px; }
+
+  /* Title scene — Playfair display + warm-dark mark */
+  .scene.title h1, .scene.title h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+  .scene.title h1 .dot { color: var(--accent); }
+  .scene.title .role {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--mute);
+  }
+  .scene.title .mark-big {
+    background: linear-gradient(180deg, #3A382F 0%, #2A2824 100%);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.10) inset,
+      0 8px 20px -6px rgba(42, 40, 36, 0.30),
+      0 24px 60px -16px rgba(58, 94, 48, 0.40);
+  }
+  .scene.title .mark-big::before {
+    background: radial-gradient(circle, rgba(58, 94, 48, 0.30), transparent 70%);
+  }
+
   /* pquote-specific mock styles */
   .pquote-app { width: min(820px, 96%); }
 
@@ -56,18 +127,18 @@
     overflow: visible;
   }
   .map-panel svg.lot polygon {
-    fill: rgba(30, 64, 175, 0.20);
-    stroke: #93c5fd;
+    fill: rgba(58, 94, 48, 0.22);
+    stroke: #B8D4A8;
     stroke-width: 2.5;
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
-    filter: drop-shadow(0 0 6px rgba(147, 197, 253, 0.5));
+    filter: drop-shadow(0 0 6px rgba(184, 212, 168, 0.55));
   }
   .scene[data-scene="3"].active .map-panel svg.lot polygon {
     animation: draw-lot 2.4s ease-out forwards;
   }
   @keyframes draw-lot {
-    to { stroke-dashoffset: 0; fill: rgba(30, 64, 175, 0.25); }
+    to { stroke-dashoffset: 0; fill: rgba(58, 94, 48, 0.28); }
   }
 
   .map-panel svg.lot .pin {
@@ -135,9 +206,11 @@
   }
   .side h3 {
     margin: 0;
-    font-size: 16px;
+    font-family: var(--font-display);
+    font-size: 20px;
     font-weight: 600;
-    letter-spacing: -.015em;
+    letter-spacing: -.005em;
+    color: var(--dark);
   }
   .side .sub {
     font-size: 12px;
@@ -153,7 +226,8 @@
     color: var(--mute);
     letter-spacing: .06em;
     text-transform: uppercase;
-    font-weight: 600;
+    font-weight: 700;
+    font-family: var(--font-mono);
   }
   .field-block .input {
     padding: 8px 12px;
@@ -165,7 +239,7 @@
   }
   .field-block .input.typing {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(30, 64, 175, .10);
+    box-shadow: 0 0 0 3px rgba(58, 94, 48, .14);
   }
 
   /* Photo upload zone */
@@ -220,13 +294,14 @@
 
   /* Line items */
   .lines {
-    background: #fbfaf6;
+    background: var(--bg2);
     border: 1px solid var(--hairline);
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 12px;
     font-size: 12.5px;
     display: grid;
     gap: 6px;
+    font-family: var(--font-mono);
   }
   .lines .line {
     display: flex;
@@ -240,12 +315,13 @@
   .lines .total {
     margin-top: 4px;
     padding-top: 8px;
-    border-top: 1px solid var(--ink);
+    border-top: 2px solid var(--accent);
     display: flex;
     justify-content: space-between;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 14px;
-    color: var(--ink);
+    color: var(--dark);
+    font-family: var(--font);
   }
   .lines .total .num {
     transition: color .25s;
@@ -338,10 +414,11 @@
     margin-bottom: 12px;
   }
   .pdf-doc .pdf-head .logo {
-    font-size: 12px;
+    font-family: var(--font-display);
+    font-size: 14px;
     font-weight: 700;
-    letter-spacing: -.015em;
-    color: var(--ink);
+    letter-spacing: -.005em;
+    color: var(--dark);
   }
   .pdf-doc .pdf-head .qnum {
     font-size: 9px;
@@ -349,8 +426,9 @@
     letter-spacing: .06em;
     text-align: right;
     line-height: 1.4;
+    font-family: var(--font-mono);
   }
-  .pdf-doc .qnum .b { display: block; font-weight: 700; color: var(--ink); font-size: 11px; }
+  .pdf-doc .qnum .b { display: block; font-weight: 700; color: var(--accent); font-size: 11px; }
   .pdf-doc .to {
     font-size: 9px;
     color: var(--mute);
@@ -370,11 +448,11 @@
   .pdf-doc .pdf-total {
     margin-top: 8px;
     padding-top: 8px;
-    border-top: 1px solid var(--ink);
+    border-top: 2px solid var(--accent);
     display: flex;
     justify-content: space-between;
     font-weight: 700;
-    color: var(--ink);
+    color: var(--dark);
     font-size: 11px;
   }
   .pdf-doc .pdf-foot {
@@ -389,9 +467,11 @@
   .pdf-copy { max-width: 320px; }
   .pdf-copy h3 {
     margin: 0 0 10px;
-    font-size: 22px;
+    font-family: var(--font-display);
+    font-size: 26px;
     font-weight: 600;
-    letter-spacing: -.02em;
+    letter-spacing: -.005em;
+    color: var(--dark);
   }
   .pdf-copy p {
     margin: 0;
@@ -404,12 +484,14 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 16px;
-    border-radius: 999px;
-    background: var(--ink);
+    padding: 11px 20px;
+    border-radius: 6px;
+    background: var(--accent);
     color: var(--bg);
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
   }
   .pdf-copy .sent {
     margin-top: 14px;
@@ -417,19 +499,23 @@
     align-items: center;
     gap: 8px;
     padding: 8px 14px;
-    border-radius: 999px;
-    background: #dcfce7;
-    color: #14532d;
-    font-size: 12px;
-    font-weight: 600;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    border: 1px solid #90B0A0;
+    color: var(--good);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
     opacity: 0;
     animation: fade-in .5s ease 2s forwards;
   }
   .pdf-copy .sent .check {
     width: 18px; height: 18px;
     border-radius: 50%;
-    background: #16a34a;
-    color: #fff;
+    background: var(--accent);
+    color: var(--bg);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -439,10 +525,12 @@
   /* Outro */
   .outro h2 {
     margin: 0;
+    font-family: var(--font-display);
     font-size: clamp(34px, 5vw, 56px);
     font-weight: 600;
-    letter-spacing: -.025em;
+    letter-spacing: -.005em;
     text-align: center;
+    color: var(--dark);
   }
   .outro h2 .accent { color: var(--accent); }
   .outro .compare {
@@ -461,10 +549,15 @@
     border: 1px solid var(--hairline);
   }
   .outro .compare .col .num {
+    font-family: var(--font-mono);
     font-size: 26px;
     font-weight: 700;
-    color: var(--ink);
+    color: var(--ink-2);
     letter-spacing: -.02em;
+  }
+  .outro .compare .col.win {
+    border-color: var(--accent);
+    background: var(--accent-soft);
   }
   .outro .compare .col.win .num { color: var(--accent); }
   .outro .compare .col .label {
@@ -487,12 +580,14 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 20px;
-    border-radius: 999px;
-    background: var(--ink);
+    padding: 12px 22px;
+    border-radius: 6px;
+    background: var(--accent);
     color: var(--bg);
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
   }
 </style>
 </head>
@@ -516,7 +611,7 @@
       <div class="mark-big">
         <svg viewBox="0 0 32 32" aria-hidden="true">
           <path d="M5.5 24.5 L16 6.5 L26.5 24.5 Z" fill="currentColor"/>
-          <path d="M13 19 L16 14 L19 19" fill="none" stroke="#93c5fd" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M13 19 L16 14 L19 19" fill="none" stroke="#B8D4A8" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
         </svg>
       </div>
       <h1>pquote<span class="dot">.</span></h1>
@@ -561,7 +656,7 @@
             <svg class="lot" viewBox="0 0 280 200">
               <polygon points="40,40 240,40 250,150 30,160" />
               <g class="pin">
-                <circle cx="140" cy="100" r="5" fill="#fff" stroke="#1e40af" stroke-width="2"/>
+                <circle cx="140" cy="100" r="5" fill="#fff" stroke="#3A5E30" stroke-width="2"/>
               </g>
             </svg>
             <div class="lot-stats">
@@ -602,7 +697,7 @@
             <span class="road v"></span>
             <span class="lot-label">5217 Memorial Dr · Houston TX</span>
             <svg class="lot" viewBox="0 0 280 200">
-              <polygon points="40,40 240,40 250,150 30,160" style="stroke-dashoffset: 0; fill: rgba(30, 64, 175, 0.25);" />
+              <polygon points="40,40 240,40 250,150 30,160" style="stroke-dashoffset: 0; fill: rgba(58, 94, 48, 0.28);" />
             </svg>
             <div class="lot-stats" style="opacity: 1;">
               <div class="big">34,820 sq ft</div>
@@ -641,7 +736,7 @@
             <span class="road v"></span>
             <span class="lot-label">5217 Memorial Dr · Houston TX</span>
             <svg class="lot" viewBox="0 0 280 200">
-              <polygon points="40,40 240,40 250,150 30,160" style="stroke-dashoffset: 0; fill: rgba(30, 64, 175, 0.25);" />
+              <polygon points="40,40 240,40 250,150 30,160" style="stroke-dashoffset: 0; fill: rgba(58, 94, 48, 0.28);" />
             </svg>
             <div class="lot-stats" style="opacity: 1;">
               <div class="big">34,820 sq ft</div>
@@ -665,7 +760,7 @@
             </div>
             <div class="field-block">
               <label>Generate</label>
-              <div class="input" style="text-align:center; background: var(--ink); color: var(--bg); border-color: var(--ink);">Build branded quote →</div>
+              <div class="input" style="text-align:center; background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: 11px; padding: 11px 12px;">Build branded quote →</div>
             </div>
           </div>
         </div>
@@ -704,7 +799,7 @@
       <div class="mark-big">
         <svg viewBox="0 0 32 32" aria-hidden="true">
           <path d="M5.5 24.5 L16 6.5 L26.5 24.5 Z" fill="currentColor"/>
-          <path d="M13 19 L16 14 L19 19" fill="none" stroke="#93c5fd" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M13 19 L16 14 L19 19" fill="none" stroke="#B8D4A8" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
         </svg>
       </div>
       <h2>pquote<span class="dot">.</span>ai</h2>

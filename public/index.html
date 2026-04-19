@@ -1024,13 +1024,104 @@
   .feat-foot .price {
     font-weight: 600;
     color: var(--ink);
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+  .feat-foot .price small {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--mute);
+    margin-top: 2px;
+    letter-spacing: 0;
   }
   .feat-foot a {
     font-weight: 600;
     color: var(--accent);
     transition: color .2s;
+    flex-shrink: 0;
   }
   .feat-foot a:hover { color: var(--accent-2); }
+
+  /* Bundle strip — sits below the 3 columns */
+  .bundle {
+    margin-top: clamp(28px, 3vw, 40px);
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 2vw, 24px);
+    padding: clamp(18px, 2vw, 24px) clamp(20px, 2.4vw, 28px);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%),
+      var(--accent-soft);
+    border: 1px solid rgba(30, 64, 175, 0.22);
+    border-radius: var(--r);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 6px 14px -8px rgba(30, 64, 175, 0.12);
+  }
+  .bundle-tag {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .bundle-body {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    flex: 1;
+    font-size: 16px;
+    color: var(--ink);
+  }
+  .bundle-body strong {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 18px;
+    letter-spacing: -.01em;
+  }
+  .bundle-arrow {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .bundle-price {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: var(--accent-2);
+  }
+  .bundle-price small {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mute);
+    margin-left: 1px;
+  }
+  .bundle-save {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-3);
+  }
+  .bundle-cta {
+    flex-shrink: 0;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background .2s, transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 10px -2px rgba(30, 64, 175, 0.30);
+  }
+  .bundle-cta:hover {
+    background: var(--accent-2);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px -2px rgba(30, 64, 175, 0.40);
+  }
 
   /* ──────────────────────────────────────────
      CTA BAND
@@ -1233,6 +1324,15 @@
     .feat-list { gap: 10px; }
     .feat-list li { font-size: 14.5px; }
     .feat-head h3 { font-size: 28px; }
+
+    /* Bundle strip — stack vertically on phones */
+    .bundle {
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      gap: 14px;
+    }
+    .bundle-cta { width: 100%; text-align: center; padding: 12px 18px; }
 
     /* CTA band */
     section.cta-band h3 { font-size: clamp(28px, 8vw, 40px); }
@@ -1544,7 +1644,7 @@
           <li><svg class="ck" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Google sign-in, no demo required</li>
         </ul>
         <div class="feat-foot">
-          <span class="price">$5.99 / mo · unlimited users</span>
+          <span class="price">$5.99 / mo<small> · unlimited users · 7-day free trial</small></span>
           <a href="https://pzip.ai" target="_blank" rel="noopener">pzip.ai ↗</a>
         </div>
       </div>
@@ -1566,7 +1666,7 @@
           <li><svg class="ck" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Multi-language interface</li>
         </ul>
         <div class="feat-foot">
-          <span class="price">Free during launch</span>
+          <span class="price">$5.99 / mo<small> · 5 free queries / day · no card</small></span>
           <a href="https://psupp.ai" target="_blank" rel="noopener">psupp.ai ↗</a>
         </div>
       </div>
@@ -1588,12 +1688,25 @@
           <li><svg class="ck" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Google sign-in, multi-user from day one</li>
         </ul>
         <div class="feat-foot">
-          <span class="price">Free during launch</span>
+          <span class="price">Free<small> · early-access beta</small></span>
           <a href="https://pquote.ai" target="_blank" rel="noopener">pquote.ai ↗</a>
         </div>
       </div>
 
     </div>
+
+    <!-- Bundle strip -->
+    <div class="bundle">
+      <div class="bundle-tag">Bundle</div>
+      <div class="bundle-body">
+        <strong>pzip + psupp</strong>
+        <span class="bundle-arrow">→</span>
+        <span class="bundle-price">$10.99<small>/mo</small></span>
+        <span class="bundle-save">save $0.99 vs. buying separately</span>
+      </div>
+      <a class="bundle-cta" href="https://pzip.ai" target="_blank" rel="noopener">Get the bundle ↗</a>
+    </div>
+
   </div>
 </section>
 

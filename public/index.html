@@ -962,6 +962,8 @@
       0 1px 2px rgba(10, 10, 10, 0.025),
       0 6px 14px -8px rgba(10, 10, 10, 0.06);
     transition: border-color .3s, transform .3s, box-shadow .3s;
+    color: inherit;
+    text-decoration: none;
   }
   .feat-col:hover {
     border-color: rgba(10, 10, 10, 0.4);
@@ -1036,13 +1038,15 @@
     margin-top: 2px;
     letter-spacing: 0;
   }
-  .feat-foot a {
+  .feat-foot a,
+  .feat-foot .feat-link {
     font-weight: 600;
     color: var(--accent);
     transition: color .2s;
     flex-shrink: 0;
   }
-  .feat-foot a:hover { color: var(--accent-2); }
+  .feat-foot a:hover,
+  .feat-col:hover .feat-link { color: var(--accent-2); }
 
   /* Bundle cards — two-tier ladder below the 3 feature columns */
   .bundles {
@@ -1730,7 +1734,7 @@
 
     <div class="grid-3 feat-grid">
 
-      <div class="feat-col">
+      <a class="feat-col" href="https://pzip.ai" target="_blank" rel="noopener">
         <div class="feat-head">
           <h3>pzip</h3>
           <span class="feat-role">Dispatch &amp; CRM · pzip.ai</span>
@@ -1748,11 +1752,11 @@
         </ul>
         <div class="feat-foot">
           <span class="price">$9.99 / mo<small> · unlimited users · 7-day free trial</small></span>
-          <a href="https://pzip.ai" target="_blank" rel="noopener">pzip.ai ↗</a>
+          <span class="feat-link">pzip.ai ↗</span>
         </div>
-      </div>
+      </a>
 
-      <div class="feat-col">
+      <a class="feat-col" href="https://psupp.ai" target="_blank" rel="noopener">
         <div class="feat-head">
           <h3>psupp</h3>
           <span class="feat-role">Diagnostics desk · psupp.ai</span>
@@ -1770,11 +1774,11 @@
         </ul>
         <div class="feat-foot">
           <span class="price">$9.99 / mo<small> · 5 free queries / day · no card</small></span>
-          <a href="https://psupp.ai" target="_blank" rel="noopener">psupp.ai ↗</a>
+          <span class="feat-link">psupp.ai ↗</span>
         </div>
-      </div>
+      </a>
 
-      <div class="feat-col">
+      <a class="feat-col" href="https://pquote.ai" target="_blank" rel="noopener">
         <div class="feat-head">
           <h3>pquote</h3>
           <span class="feat-role">Quoting generator · pquote.ai</span>
@@ -1792,9 +1796,9 @@
         </ul>
         <div class="feat-foot">
           <span class="price">$9.99 / mo<small> · 7-day free trial · no card</small></span>
-          <a href="https://pquote.ai" target="_blank" rel="noopener">pquote.ai ↗</a>
+          <span class="feat-link">pquote.ai ↗</span>
         </div>
-      </div>
+      </a>
 
     </div>
 

@@ -58,7 +58,8 @@
   }
 
   /* Anchor offset — accounts for sticky header */
-  section[id] { scroll-margin-top: 68px; }
+  section[id],
+  [id="pricing"] { scroll-margin-top: 68px; }
 
   img, svg { display: block; max-width: 100%; }
 
@@ -411,6 +412,36 @@
   .btn:hover .arrow { transform: translateX(4px); }
   .btn.ghost { background: transparent; color: var(--ink); }
   .btn.ghost:hover { background: var(--ink); color: var(--bg); }
+
+  .sub .price-line {
+    display: inline-block;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .reassure {
+    margin: 14px auto 0;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--mute);
+    letter-spacing: 0.01em;
+  }
+
+  .hero-secondary {
+    margin: 10px auto 0;
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+  .hero-secondary a {
+    color: var(--accent);
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: color .2s, border-color .2s;
+  }
+  .hero-secondary a:hover {
+    color: var(--accent-2);
+    border-bottom-color: currentColor;
+  }
 
   /* ──────────────────────────────────────────
      STAT STRIP
@@ -1175,6 +1206,14 @@
     border-color: var(--accent-2);
     box-shadow: 0 6px 16px -2px rgba(30, 64, 175, 0.40);
   }
+  .bundle-reassure {
+    margin-top: 10px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--mute);
+    letter-spacing: 0.01em;
+    text-align: center;
+  }
 
   /* ──────────────────────────────────────────
      CTA BAND
@@ -1498,11 +1537,12 @@
       <a href="#suite">Suite</a>
       <a href="#tours">Tours</a>
       <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
       <a href="#contact">Contact</a>
     </nav>
     <div class="top-cta">
-      <a class="pill solid" href="#suite">
-        Get started
+      <a class="pill solid" href="#pricing">
+        See pricing
       </a>
     </div>
   </div>
@@ -1533,18 +1573,21 @@
       Hard-working software for <span class="accent">hard-working crews.</span>
     </h1>
     <p class="sub reveal d4">
-      RockStandard ships three opinionated tools — <b>dispatch</b>, <b>diagnostics</b>,
-      and <b>quoting</b> — that share one login and a single bill. Built by an
-      operator, for operators.
+      Three opinionated tools — <b>dispatch</b>, <b>diagnostics</b>, and <b>quoting</b> —
+      under one login and one bill. <b class="price-line">From $9.99/mo per app · $19.99/mo for all three.</b>
+      Built by an operator, for operators.
     </p>
     <div class="hero-ctas reveal d5">
-      <a class="btn" href="#suite">
-        See the suite <span class="arrow">→</span>
-      </a>
-      <a class="btn ghost" href="#tours">
-        Watch a tour
+      <a class="btn" href="#pricing">
+        See pricing <span class="arrow">→</span>
       </a>
     </div>
+    <p class="reassure reveal d5">
+      7-day free trial · No credit card · Cancel anytime
+    </p>
+    <p class="hero-secondary reveal d5">
+      or <a href="#tours">watch a 60-second tour ↓</a>
+    </p>
   </div>
 </section>
 
@@ -1670,7 +1713,7 @@
         <div class="specs">
           <span>Field service</span><span>Postgres</span><span>$5.99 / mo</span>
         </div>
-        <div class="visit">Visit pzip.ai <span class="arrow">↗</span></div>
+        <div class="visit">Start free on pzip.ai <span class="arrow">↗</span></div>
       </a>
 
       <a class="card" href="https://psupp.ai" target="_blank" rel="noopener">
@@ -1684,7 +1727,7 @@
         <div class="specs">
           <span>Equipment</span><span>282 docs</span><span>Agentic search</span>
         </div>
-        <div class="visit">Visit psupp.ai <span class="arrow">↗</span></div>
+        <div class="visit">Start free on psupp.ai <span class="arrow">↗</span></div>
       </a>
 
       <a class="card" href="https://pquote.ai" target="_blank" rel="noopener">
@@ -1698,7 +1741,7 @@
         <div class="specs">
           <span>Estimating</span><span>Mapbox</span><span>AI-assisted</span>
         </div>
-        <div class="visit">Visit pquote.ai <span class="arrow">↗</span></div>
+        <div class="visit">Start free on pquote.ai <span class="arrow">↗</span></div>
       </a>
 
     </div>
@@ -1803,7 +1846,7 @@
     </div>
 
     <!-- Bundle cards -->
-    <div class="bundles">
+    <div class="bundles" id="pricing">
 
       <div class="bundle-card">
         <div class="bundle-tag">Bundle</div>
@@ -1815,6 +1858,7 @@
         </div>
         <div class="bundle-save">Save $4.99 / mo · 25% off</div>
         <a class="bundle-cta" href="https://pzip.ai" target="_blank" rel="noopener">Get the bundle ↗</a>
+        <div class="bundle-reassure">7-day free trial · No credit card · Cancel anytime</div>
       </div>
 
       <div class="bundle-card featured">
@@ -1827,6 +1871,7 @@
         </div>
         <div class="bundle-save">Save $9.99 / mo · third app free</div>
         <a class="bundle-cta solid" href="https://pzip.ai" target="_blank" rel="noopener">Get the suite ↗</a>
+        <div class="bundle-reassure">7-day free trial · No credit card · Cancel anytime</div>
       </div>
 
     </div>
